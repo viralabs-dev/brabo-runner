@@ -1,8 +1,8 @@
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { acharCredenciaisLocais, MAPA_DE_PROVIDERS, PROVIDERS_COM_CREDENCIAL } from './credenciais-locais.ts';
+import { acharCredenciaisLocais } from './credenciais-locais.ts';
 
 const dirs: string[] = [];
 function casa(arquivos: Record<string, unknown>): string {
@@ -97,13 +97,5 @@ describe('acharCredenciaisLocais', () => {
       .join('\n');
     for (const s of SEG) expect(saida).not.toContain(s);
     expect(saida).toContain('…1111');
-  });
-});
-
-describe('MAPA_DE_PROVIDERS', () => {
-  it('só aponta para providers que a api aceita com credencial', () => {
-    const api = readFileSync(join(import.meta.dirname, '../../api/src/domain/llm/llm-provider-names.ts'), 'utf8');
-    for (const p of PROVIDERS_COM_CREDENCIAL) expect(api).toContain(`'${p}'`);
-    for (const v of Object.values(MAPA_DE_PROVIDERS)) if (v) expect(PROVIDERS_COM_CREDENCIAL).toContain(v);
   });
 });

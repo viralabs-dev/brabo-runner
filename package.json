@@ -28,7 +28,7 @@
     "node": ">=22.6.0"
   },
   "scripts": {
-    "start": "node src/index.ts",
+    "start": "node --import ./scripts/strip-node-modules.mjs src/index.ts",
     "build": "tsup",
     "build:bin": "node scripts/build-bin.mjs",
     "smoke": "node scripts/smoke-dist.mjs",
