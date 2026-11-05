@@ -23,7 +23,6 @@ jobs:
           node-version: '26.10.0'
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: ls -la node_modules/@brabo/docker-port/ node_modules/@brabo/docker-port/src | head -30; pnpm exec tsc --noEmit --traceResolution | grep -A14 "Resolving module '@brabo/docker-port'" | head -30 || true
       - run: pnpm lint
       - run: pnpm typecheck
       # O spec do systemd PULA, nomeando o motivo, quando a máquina não tem systemd --user.
