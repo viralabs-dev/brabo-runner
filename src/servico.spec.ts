@@ -124,6 +124,7 @@ describe('service install (RN-518)', () => {
     // o registro que `uninstall` lê de volta. SEM aspas: o systemd não faz
     // unquoting nesta diretiva, e com elas a unit nunca iniciou — quem prova
     // isso contra o validador de verdade é `servico-systemd.spec.ts`.
+    expect(unit).toContain('\nDocumentation=https://github.com/viralabs-dev/brabo-runner#readme\n');
     expect(unit).toContain(`\nWorkingDirectory=${PASTA}\n`);
     expect(unit).not.toContain('WorkingDirectory="');
     expect(unit).toContain(`"--project" "${PROJETO}"`);
