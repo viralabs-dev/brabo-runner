@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- `README.md`: translated to English (AT-745); quoted CLI strings stay in pt-BR.
 - `docs/`: a doc do runner passa a ser só em inglês (AT-745): `business-rules/runner.md` vira a fonte em inglês com `idioma_original: en` e `docs/i18n/` é removida.
 - `politica.yml`: pins do `brabo-ci` sobem para `b030fbf` (dispensa da PR do bot, ADR 0255; AT-733).
 - `THIRD_PARTY_NOTICES.md` próprio do runner (AT-727): binário (Bun 1.4.0 e as LGPL ligadas, com oferta escrita), pacotes embutidos e pacote npm; entra no `files` do `package.json` e é conferido por `src/third-party-notices.spec.ts`. Antes era cópia do aviso do produto.
