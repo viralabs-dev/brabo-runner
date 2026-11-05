@@ -545,4 +545,4 @@ e [ADR 0112](https://github.com/daneiel/brabo/blob/main/docs/adr/0112-binario-st
 
 ## Licença
 
-MIT
+MIT. Os avisos de software de terceiros, com a oferta escrita para as bibliotecas LGPL do runtime Bun, estão em [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
