@@ -55,6 +55,29 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Cria a Release da tag (a 1ª do repositório não tem outro autor: nenhum
+  # `release.yml` a faz). Idempotente: dispatch sobre tag já publicada só segue.
+  # Os jobs abaixo continuam esperando a Release com teto, e agora ela nasce aqui.
+  release:
+    name: Release da tag
+    if: github.event_name != 'workflow_dispatch' || inputs.tag != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "::notice::a Release de $TAG já existe."
+          else
+            gh release create "$TAG" --verify-tag --title "$TAG" --generate-notes
+          fi
+
   build:
     name: Binário (${{ matrix.target }})
     strategy:
@@ -357,6 +380,11 @@ jobs:
           echo "ref=$tag" >> "$GITHUB_OUTPUT"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
 
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          ref: ${{ steps.alvo.outputs.ref }}
+          persist-credentials: false
+
       - name: Instalar o cosign
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6  # v4.1.2
 
@@ -442,9 +470,11 @@ jobs:
           # download.
           gh release download "$TAG" --pattern 'brabo-runner-*' --dir . || true
 
-          # Instalador, avisos de terceiros e assets `brabo-install-*` entram no
-          # manifesto da Release do PRODUTO (brabo-infra, plano AT-688): este
-          # manifesto cobre só os binários do runner.
+          # A oferta escrita de fonte: o binário embute o runtime do Bun e as
+          # dependências do runner, e quem o baixa da Release não tem o
+          # repositório. Do checkout desta tag, entra no MESMO manifesto
+          # assinado. `install.sh` e `brabo-install-*` são do `brabo`.
+          cp "${GITHUB_WORKSPACE}/THIRD_PARTY_NOTICES.md" .
 
           presentes=''
           faltando=''
@@ -468,7 +498,7 @@ jobs:
           # por linha, e nenhum nome tem espaço (o script recusa a tabela que
           # tiver).
           # shellcheck disable=SC2086
-          sha256sum brabo-runner-* > checksums.txt
+          sha256sum brabo-runner-* THIRD_PARTY_NOTICES.md > checksums.txt
           echo "cobre:${presentes}" >&2
           if [ -n "${faltando# }" ]; then
             echo "::warning::o manifesto NÃO cobre:${faltando} — esses alvos não têm binário anexado a $TAG."
@@ -500,6 +530,6 @@ jobs:
           # alvo ser reanexado, e aí o manifesto TEM de ser substituído — ao
           # contrário do binário, cujo passo é idempotente porque o mesmo
           # arquivo não muda.
-          gh release upload "$TAG" checksums.txt checksums.txt.bundle --clobber
-          echo "anexados: checksums.txt e checksums.txt.bundle -> $TAG"
+          gh release upload "$TAG" checksums.txt checksums.txt.bundle THIRD_PARTY_NOTICES.md --clobber
+          echo "anexados: checksums.txt, checksums.txt.bundle e THIRD_PARTY_NOTICES.md -> $TAG"
 
