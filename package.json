@@ -42,7 +42,7 @@
     "node-pty": "^1.1.0"
   },
   "devDependencies": {
-    "@brabo/docker-port": "github:viralabs-dev/brabo-contracts#v1.0.0&path:/packages/docker-port",
+    "@brabo/docker-port": "git+https://github.com/viralabs-dev/brabo-contracts.git#v1.0.0&path:/packages/docker-port",
     "@types/node": "^24.0.0",
     "@types/phoenix": "^1.6.7",
     "oxlint": "^1.71.0",
