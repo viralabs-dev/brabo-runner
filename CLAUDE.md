@@ -87,7 +87,7 @@ CLI `brabo-runner` que roda na máquina do usuário (ADR 0103). Terminal por PTY
   do outro lado — "parseia" não basta quando o parser aceita o arquivo errado.
 
 ## Regras do runner
-- `(este repo)`: workspace novo, Node/TS — CLI (`brabo-runner`) que roda
+- este repo: workspace novo, Node/TS — CLI (`brabo-runner`) que roda
   na máquina do usuário, conectando ao engine via canal Phoenix (`phoenix`,
   embutido no bundle) para executar comandos aprovados e terminal
   interativo (`node-pty`, único `external` do build `tsup` — binding
