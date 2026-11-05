@@ -1,0 +1,5 @@
+# `node-pty` é binding NATIVO de verdade (compila com node-gyp no postinstall):
+# sem o build, o terminal interativo do runner não existe. `esbuild` é o do tsup.
+allowBuilds:
+  esbuild: true
+  'node-pty': true

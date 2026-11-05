@@ -187,7 +187,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build do binário (${{ matrix.target }})
-        run: pnpm --filter runner build:bin
+        run: pnpm build:bin
 
       # Smoke REAL sobre o binário recém-construído — nunca confiar em CI
       # antigo. `--self-test-pty` spawna um PTY de verdade e prova que o
@@ -195,7 +195,7 @@ jobs:
       # plataforma — é o mesmo raciocínio de "cinto e suspensório" que
       # `publish-runner.yml` já aplica ao smoke do `dist/index.cjs`.
       - name: Smoke do binário
-        run: pnpm --filter runner smoke:bin
+        run: pnpm smoke:bin
 
       # Idempotência — mesmo padrão de `publish-runner.yml` ("Essa versão já
       # está publicada?"): republicar a MESMA tag (workflow_dispatch depois
@@ -217,9 +217,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          arquivo="$(ls apps/runner/dist-bin/brabo-runner-* 2>/dev/null | head -1)"
+          arquivo="$(ls dist-bin/brabo-runner-* 2>/dev/null | head -1)"
           if [ -z "$arquivo" ]; then
-            echo "::error::nenhum binário encontrado em apps/runner/dist-bin/ — o build falhou silenciosamente?"
+            echo "::error::nenhum binário encontrado em dist-bin/ — o build falhou silenciosamente?"
             exit 1
           fi
           nome="$(basename "$arquivo")"
@@ -357,25 +357,8 @@ jobs:
           echo "ref=$tag" >> "$GITHUB_OUTPUT"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
 
-      # O checkout existe por UM motivo: o `install.sh` desta tag entra no
-      # manifesto. Sem ele, o script não teria contra o que conferir a si
-      # mesmo, e a verificação de origem da RN-526 seria letra morta.
-      - name: Checkout na tag
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
-        with:
-          ref: ${{ steps.alvo.outputs.ref }}
-
       - name: Instalar o cosign
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6  # v4.1.2
-
-      # Node só para `scripts/ci/assets-do-instalador.ts` (ADR 0160), que diz
-      # QUAIS arquivos do checkout viram asset e com que nome. O `node` que o
-      # `ubuntu-latest` traz não executa `.ts` por type stripping; a versão é a
-      # MESMA do job `build`, e nada aqui roda `pnpm install` — o script não
-      # tem dependência de pacote de propósito.
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1  # v7.1.0
-        with:
-          node-version: ${{ env.NODE_VERSION }}
 
       # A espera que o `needs: build` fazia, agora com TETO e olhando o que
       # importa: os ASSETS, não os jobs.
@@ -459,32 +442,9 @@ jobs:
           # download.
           gh release download "$TAG" --pattern 'brabo-runner-*' --dir . || true
 
-          # O `install.sh` entra no manifesto e na Release, e sem isso a
-          # verificação que ele faz de SI MESMO seria impossível: ele confere o
-          # próprio hash contra este arquivo (RN-526). Vem do checkout desta
-          # tag, não de download — é o mesmo commit que produziu tudo o mais
-          # que está sendo assinado aqui.
-          cp "${GITHUB_WORKSPACE}/install.sh" .
-
-          # A oferta escrita de fonte (AT-120): o binário standalone embute o
-          # runtime do Bun e as dependências do runner, e quem o baixa da
-          # Release não tem o repositório. O MESMO `THIRD_PARTY_NOTICES.md` que
-          # as cinco imagens levam em `/usr/share/doc/brabo/` viaja aqui como
-          # asset, no MESMO manifesto assinado dos binários. Do checkout desta
-          # tag, pelo motivo do `install.sh` acima.
-          cp "${GITHUB_WORKSPACE}/THIRD_PARTY_NOTICES.md" .
-
-          # Os arquivos que o `install.sh` baixa para SUBIR a instalação
-          # (ADR 0160, RN-570): o compose e o que ele monta. Entram no MESMO
-          # manifesto, e é isso que dá a eles a mesma cadeia do binário — o
-          # instalador os confere contra este arquivo antes de gravar qualquer
-          # coisa. Até aqui ele usava um caminho relativo que nada trazia, e a
-          # instalação morria depois do `.env`. Vêm do checkout DESTA tag, pelo
-          # motivo do `install.sh` acima; a tabela nome-do-asset -> caminho mora
-          # no script, e o `stdout` dele é um nome por linha.
-          ASSETS_DO_INSTALADOR="$(node "${GITHUB_WORKSPACE}/scripts/ci/assets-do-instalador.ts" preparar "${GITHUB_WORKSPACE}" .)"
-          [ -n "$ASSETS_DO_INSTALADOR" ] \
-            || { echo "::error::nenhum asset do instalador preparado — sem eles o install.sh desta tag recusa em toda máquina."; exit 1; }
+          # Instalador, avisos de terceiros e assets `brabo-install-*` entram no
+          # manifesto da Release do PRODUTO (brabo-infra, plano AT-688): este
+          # manifesto cobre só os binários do runner.
 
           presentes=''
           faltando=''
@@ -508,7 +468,7 @@ jobs:
           # por linha, e nenhum nome tem espaço (o script recusa a tabela que
           # tiver).
           # shellcheck disable=SC2086
-          sha256sum brabo-runner-* install.sh THIRD_PARTY_NOTICES.md $ASSETS_DO_INSTALADOR > checksums.txt
+          sha256sum brabo-runner-* > checksums.txt
           echo "cobre:${presentes}" >&2
           if [ -n "${faltando# }" ]; then
             echo "::warning::o manifesto NÃO cobre:${faltando} — esses alvos não têm binário anexado a $TAG."
@@ -540,6 +500,5 @@ jobs:
           # alvo ser reanexado, e aí o manifesto TEM de ser substituído — ao
           # contrário do binário, cujo passo é idempotente porque o mesmo
           # arquivo não muda.
-          # shellcheck disable=SC2086
-          gh release upload "$TAG" checksums.txt checksums.txt.bundle install.sh THIRD_PARTY_NOTICES.md $ASSETS_DO_INSTALADOR --clobber
-          echo "anexados: checksums.txt, checksums.txt.bundle, install.sh, THIRD_PARTY_NOTICES.md e os assets do instalador -> $TAG"
+          gh release upload "$TAG" checksums.txt checksums.txt.bundle --clobber
+          echo "anexados: checksums.txt e checksums.txt.bundle -> $TAG"

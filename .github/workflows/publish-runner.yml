@@ -147,21 +147,20 @@ jobs:
       # `package.json` carregue a versão sendo publicada).
       - name: Injetar a versão da tag
         if: env.TEM_NPM_TOKEN == 'true' && steps.check.outputs.pular != 'true'
-        working-directory: apps/runner
         env:
           VERSAO: ${{ steps.alvo.outputs.versao }}
         run: npm pkg set version="${VERSAO}"
 
       - name: Build (tsup)
         if: env.TEM_NPM_TOKEN == 'true' && steps.check.outputs.pular != 'true'
-        run: pnpm --filter runner build
+        run: pnpm build
 
       # Cinto e suspensório: o mesmo smoke que `ci.yml` roda em todo PR,
       # repetido aqui sobre o artefato que está prestes a ir pro registro
       # público — nunca confiar num build de PR antigo.
       - name: Smoke do artefato empacotado
         if: env.TEM_NPM_TOKEN == 'true' && steps.check.outputs.pular != 'true'
-        run: pnpm --filter runner smoke
+        run: pnpm smoke
 
       # `latest` no npm é o que `npm install`/`npm install -g` sem versão
       # pega — e `npm publish` MOVE essa dist-tag pro que acabou de publicar
@@ -174,7 +173,6 @@ jobs:
       # do contrário, marca com uma dist-tag própria.
       - name: Publicar no npm
         if: env.TEM_NPM_TOKEN == 'true' && steps.check.outputs.pular != 'true'
-        working-directory: apps/runner
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           VERSAO: ${{ steps.alvo.outputs.versao }}

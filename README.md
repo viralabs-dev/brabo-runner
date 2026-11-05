@@ -1,5 +1,7 @@
 # `@brabo/runner`
 
+> **Repositório:** `viralabs-dev/brabo-runner`, extraído do monorepo `daneiel/brabo` (AT-699, ADR 0252) com o histórico de `apps/runner/`. A porta de Docker vem do `brabo-contracts#v1.0.0`. Desenvolvimento: `pnpm install && pnpm lint && pnpm typecheck && pnpm test`. Branches permanentes `dev` e `main`; tag só por workflow. Links `github.com/daneiel/brabo/...` abaixo apontam ao monorepo de origem e serão atualizados pela AT-691.
+
 CLI que roda **na máquina do próprio usuário**, conectada ao engine por um
 canal Phoenix autenticado por ticket de uso único (ADR 0102/0103). Ela
 existe para projetos no modo `runner` (ADR 0104): a pasta do código
