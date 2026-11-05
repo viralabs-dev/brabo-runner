@@ -199,3 +199,4 @@ jobs:
             echo
             echo "\`@brabo/runner@${VERSAO}\` publicado."
           } >> "$GITHUB_STEP_SUMMARY"
+

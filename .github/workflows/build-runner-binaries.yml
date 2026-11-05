@@ -502,3 +502,4 @@ jobs:
           # arquivo não muda.
           gh release upload "$TAG" checksums.txt checksums.txt.bundle --clobber
           echo "anexados: checksums.txt e checksums.txt.bundle -> $TAG"
+
