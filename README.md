@@ -1,548 +1,357 @@
 # `@brabo/runner`
 
-> **Repository:** `viralabs-dev/brabo-runner`, extracted from the `daneiel/brabo` monorepo (AT-699, ADR 0252) with the history of `apps/runner/`. The Docker port comes from `brabo-contracts#v1.0.0`. Development: `pnpm install && pnpm lint && pnpm typecheck && pnpm test`. Permanent branches are `dev` and `main`; tags only by workflow. The `github.com/daneiel/brabo/...` links below point to the origin monorepo and will be updated by AT-691.
+CLI que roda **na máquina do próprio usuário** e se conecta ao engine do Brabo
+por um canal Phoenix autenticado com ticket de uso único (ADR 0102/0103). Serve
+aos projetos em modo `runner` (ADR 0104): a pasta do código fica na sua máquina,
+sem bind mount. Com os privilégios de quem o executa, ele:
 
-A CLI that runs **on the user's own machine**, connected to the engine through a
-Phoenix channel authenticated by a single-use ticket (ADR 0102/0103). It
-exists for projects in `runner` mode (ADR 0104): the code folder
-stays on the user's machine, with no bind mount at all. Running with the
-privileges of whoever executes it, it:
+- executa os comandos dos agentes que o pipeline de `proposed_action` já
+  **aprovou** (`exec`), confirmando o caminho real da pasta;
+- abre um terminal interativo de verdade (PTY) para a aba **Terminal** da web;
+- navega pelas pastas locais (`fs_list_dir`/`fs_home_dir`) para o seletor
+  "Procurar pasta..." da criação e adoção de projeto;
+- sobe o container do projeto (`container_start`) pela porta de Docker do
+  `@brabo/docker-port` (ADR 0128/0130) e cria pastas de projeto
+  (`workspace_create`) quando há uma base consentida.
 
-- runs agent commands already **approved** by the `proposed_action` pipeline
-  (`exec`), confirming the real path of the folder;
-- offers a real interactive terminal (PTY) for the **Terminal** tab of the
-  web app;
-- does the local folder navigation (`fs_list_dir`/`fs_home_dir`) that feeds
-  the folder picker ("Procurar pasta...") in project creation/adoption.
+Ele não decide política: só faz o que o produto já aprovou. O desenho de cada
+parte está nos docblocks de `src/channel.ts`, `src/exec.ts`, `src/pty.ts`,
+`src/guard.ts` e `src/fs-browser.ts`. As regras de negócio estão em
+[`docs/business-rules/runner.md`](docs/business-rules/runner.md).
 
-It decides no policy: it only does what the product has already approved. See the
-docblocks of `src/channel.ts`, `src/exec.ts`, `src/pty.ts`, `src/guard.ts` and
-`src/fs-browser.ts` for the design of each part. The Docker port, the
-foundation of container execution (ADR 0128), lives in the
-`@brabo/docker-port` package since it gained a second server-side consumer
-(ADR 0130); from here, **nothing calls it yet**: no channel message
-reaches it and no container starts on your machine. The docblock of the two files
-of that package explains the five-operation port and the packaging proof
-that chose the implementation. See also
-[ADR 0107](https://github.com/daneiel/brabo/blob/main/docs/adr/0107-navegacao-de-pasta-local-via-o-runner.md)
-for the security argument behind the folder navigation.
+## Repositórios do Brabo
 
-## Via the installer (recommended)
+O Brabo é dividido em repositórios por camada
+([ADR 0252](https://github.com/viralabs-dev/brabo/blob/main/docs/adr/0252-o-brabo-vira-um-conjunto-de-repositorios.md)),
+e a documentação central está no [brabo](https://github.com/viralabs-dev/brabo)
+e em https://viralabs-dev.github.io/brabo/prd/.
 
-The path is the Brabo installer, the same command the project screen
-(`runner` mode) shows:
+- **Depende de:** [brabo-contracts](https://github.com/viralabs-dev/brabo-contracts)
+  (o `@brabo/docker-port`, fixado em `#v1.0.0` no `package.json`) e
+  [brabo-ci](https://github.com/viralabs-dev/brabo-ci) (política de PR e release
+  por tag).
+- **É usado por:** [brabo](https://github.com/viralabs-dev/brabo) (o
+  `install.sh` baixa o binário da Release do runner) e
+  [brabo-infra](https://github.com/viralabs-dev/brabo-infra) (aferições
+  cruzadas e manifesto da Release do produto).
+
+| Repositório | Papel |
+|---|---|
+| [brabo](https://github.com/viralabs-dev/brabo) | Porta de entrada: documentação central, ADRs, instalador e release do produto |
+| [brabo-api](https://github.com/viralabs-dev/brabo-api) | API (NestJS, Drizzle, PostgreSQL com pgvector) |
+| [brabo-engine](https://github.com/viralabs-dev/brabo-engine) | Engine (Elixir/OTP, Phoenix, Oban): agentes, gates, sessões e runners |
+| [brabo-web](https://github.com/viralabs-dev/brabo-web) | Interface web (React, Vite, TanStack, Tailwind) |
+| [brabo-runner](https://github.com/viralabs-dev/brabo-runner) | Este repositório: a CLI que roda na máquina do usuário |
+| [brabo-broker](https://github.com/viralabs-dev/brabo-broker) | Broker de containers, o único processo que fala com o Docker do servidor |
+| [brabo-contracts](https://github.com/viralabs-dev/brabo-contracts) | Contratos compartilhados (shared, docker-port, contracts) |
+| [brabo-infra](https://github.com/viralabs-dev/brabo-infra) | Infraestrutura: composes, Kubernetes, backup e restore, docker-bake |
+| [brabo-ci](https://github.com/viralabs-dev/brabo-ci) | Workflows reutilizáveis de política de PR, aprovação, promoção e versão |
+| [brabo-qa](https://github.com/viralabs-dev/brabo-qa) | Testes entre repositórios: E2E, golden-sets e instrumentos de medição |
+| [brabo-workspace](https://github.com/viralabs-dev/brabo-workspace) | Pasta-mãe que reúne os clones dos repositórios lado a lado |
+
+## Instalação
+
+### Pelo instalador (recomendado)
+
+É o mesmo comando que a tela do projeto (modo `runner`) mostra:
 
 ```sh
-curl -fsSLO https://github.com/daneiel/brabo/releases/latest/download/install.sh && bash install.sh
+curl -fsSLO https://github.com/viralabs-dev/brabo/releases/latest/download/install.sh && bash install.sh
 ```
 
-It downloads the binary, checks it against the signed `checksums.txt` of the release, installs
-it already executable (`install -m 0755`) and pairs the machine through the terminal
-(`device-key create`/`finish`, below), installing the machine agent as a
-service (RN-547).
+O `install.sh` vem da Release do `brabo`; o binário do runner vem da Release do
+`viralabs-dev/brabo-runner` na tag que o instalador fixa. Ele confere o binário
+contra o `checksums.txt` assinado dessa Release, instala já executável
+(`install -m 0755`), pareia a máquina pelo terminal (`device-key create`/`finish`,
+abaixo) e instala o agente de máquina como serviço (RN-547).
 
-Until ADR 0203 there was an **automatic mode through the browser** (ADR 0118): the screen
-wrote the binary, `brabo-runner.config.json` and a device key to a folder.
-It was **retired**: it was the only path that ended in a manual
-`chmod +x`. A folder configured that way **keeps working**: the CLI
-still reads the config and the key from the folder it is run from, with no project id
-and no token, and an explicit flag always wins over the local file when both
-appear.
+O antigo **modo automático pelo navegador** (ADR 0118), que gravava binário,
+`brabo-runner.config.json` e chave de dispositivo numa pasta, foi aposentado no
+ADR 0203. Uma pasta configurada assim **continua funcionando**: a CLI ainda lê a
+config e a chave da pasta de onde é executada, e uma flag explícita sempre vence
+o arquivo local.
 
-## Installation
-
-### Via npm (requires Node.js >= 22.6)
+### Pelo npm (exige Node.js >= 22.6)
 
 ```sh
 npm install -g @brabo/runner
 ```
 
-### Standalone binary (no Node/npm)
+O pacote é publicado no npm pelo `publish-runner.yml` a cada tag.
 
-Download the executable for your platform straight from a
-[GitHub Release](https://github.com/daneiel/brabo/releases). It needs
-no Node, npm or build toolchain installed:
+### Binário standalone (sem Node nem npm)
 
-| Platform | File |
+Baixe o executável da sua plataforma na
+[Release do brabo-runner](https://github.com/viralabs-dev/brabo-runner/releases):
+
+| Plataforma | Arquivo |
 |---|---|
 | Linux x64 | `brabo-runner-linux-x64` |
 | Linux ARM64 | `brabo-runner-linux-arm64` |
 | macOS Apple Silicon | `brabo-runner-darwin-arm64` |
 
-> The table is the MATRIX, not what each Release has: up to `v5.0.0` only the two
-> Linux binaries were ever attached (check with `gh release view`).
->
-> **macOS Intel has no binary, by decision** (ADR 0174): the
-> `macos-13` runner was retired by GitHub, and on `macos-15-intel` the binary
-> builds but fails `--self-test-pty`, because of a Bun bug with
-> `node-pty` on macOS (oven-sh/bun#25822). The SAME proof passes under Node, so
-> on an Intel Mac the path is `npm install -g @brabo/runner`, and that is what
-> `install.sh` says instead of downloading.
->
-> **Windows has no binary, by decision** (ADR 0187): the binary builds and
-> loads `node-pty`, but under Bun the ConPTY output pipe ends after the
-> first chunk: even `cmd.exe /c echo` dies with 0xC000013A, the same
-> family as the Mac Intel bug. On Windows the path is
-> `npm install -g @brabo/runner`, under Node; `install.sh` already refused Windows
-> (ADR 0150).
-
 ```sh
-# Linux/macOS
 chmod +x ./brabo-runner-<plataforma>
 ./brabo-runner-<plataforma> --project <projectId> --dir <caminho-absoluto> --token brb_...
 ```
 
-The binary is a single file. The native addon (`node-pty`, used only by the
-interactive terminal of the Code tab) is already embedded inside it (ADR 0112),
-extracted to a temporary directory on the first run. It is not
-signed/notarized yet (macOS Gatekeeper and Windows SmartScreen will
-warn on first use), a backlog item declared in ADR 0112 that requires the
-product owner to obtain/fund a code-signing identity.
+- **macOS Intel não tem binário, por decisão** (ADR 0174): no `macos-15-intel`
+  o binário compila mas reprova o `--self-test-pty`, por um bug do Bun com o
+  `node-pty` (oven-sh/bun#25822). A mesma prova passa no Node, então ali o
+  caminho é `npm install -g @brabo/runner`, e é isso que o `install.sh` diz.
+- **Windows não tem binário, por decisão** (ADR 0187): sob Bun o pipe de saída
+  do ConPTY termina depois do primeiro pedaço. No Windows o caminho é o npm; o
+  `install.sh` já recusa Windows (ADR 0150).
 
-## Usage
+O binário é um arquivo só, com o addon nativo `node-pty` embutido (ADR 0112) e
+extraído para um diretório temporário na primeira execução. Ainda não é
+assinado nem notarizado (Gatekeeper e SmartScreen avisam no primeiro uso):
+pendência do ADR 0112 que depende de o dono obter uma identidade de assinatura.
+
+## Uso
 
 ```sh
-brabo-runner --project <projectId> --dir <caminho-absoluto> --token brb_... [--api-url <url>]
+brabo-runner --project <projectId> --dir <caminho-absoluto> --token brb_... [--api-url <url>] [--base <pasta>]
 ```
 
-All the flags below are optional when the current folder has
-`brabo-runner.config.json`/`brabo-runner-device-key.jwk.json` (automatic
-mode, above); a flag given explicitly always wins over the value
-in the local file.
+Todas as flags são opcionais quando a pasta corrente tem
+`brabo-runner.config.json`/`brabo-runner-device-key.jwk.json`; a flag explícita
+sempre vence o arquivo local.
 
-- `--project`: the project id in Brabo, with `execution_mode` = `runner`.
-  Only **one** runner per project in the whole cluster
-  (`Engine.Runners.Registry`): a second `brabo-runner` for the same
-  project is refused at join. When omitted, the CLI only continues as a **machine
-  agent** (below), which requires a machine key and a consented base; otherwise it
-  prints the usage saying what was missing.
-- `--dir`: the absolute folder where the project's code lives on this machine,
-  the root for commands (`exec`) and the terminal (PTY). When omitted, the root is the
-  folder the command runs from (`cwd`). If the folder does not yet
-  exist, it is **created automatically** (`mkdir -p`); if `--dir` points
-  to an existing file, it is an error: this CLI never overwrites a
-  file (RN-435, ADR 0104). The folder navigation
-  (`fs_list_dir`/`fs_home_dir`) is **not** restricted to this folder: it
-  navigates freely across the machine, on purpose (see `src/fs-browser.ts`). On
-  **Linux**, `--dir` is only accepted inside the user's `$HOME` (the home itself
-  or a subfolder of it); outside Linux this restriction does not apply
-  (RN-434, ADR 0104); the `$HOME` check runs BEFORE the automatic
-  creation, so a folder outside the home on Linux is still refused
-  even when it does not exist yet.
-- `--token`: a Personal Access Token (`brb_...`), generated in **Project
-  settings -> Access tokens**. It can also come from the environment variable
-  `BRABO_ACCOUNT_TOKEN`; it is never written to disk by this CLI. Without
-  `--token`/`BRABO_ACCOUNT_TOKEN`, the local device key of the automatic
-  mode is used to authenticate (a short-lived EdDSA JWT, signed on
-  each connection attempt).
-- `--api-url`: priority order: explicit flag -> `BRABO_API_URL` ->
-  `apiUrl` of the local `brabo-runner.config.json` -> `http://localhost:3000`.
-- `--base`: this machine's **projects base**, the folder under which each
-  project is a **subfolder** (ADR 0151, RN-529). When omitted, it is read from
-  `$XDG_CONFIG_HOME/brabo/runner.json` (otherwise
-  `~/.config/brabo/runner.json`), which is where the installer writes it; the explicit
-  flag wins over the file. **With no flag and no file the runner runs without a
-  base, exactly as it always did.**
+- `--project`: o id do projeto, com `execution_mode` = `runner`. Só **um** runner
+  por projeto no cluster (`Engine.Runners.Registry`): um segundo é recusado no
+  join. Sem `--project`, a CLI só segue como **agente de máquina** (abaixo).
+- `--dir`: a pasta absoluta do código do projeto nesta máquina, raiz do `exec`
+  e do PTY. Sem ela, vale a pasta corrente. Se não existir, é **criada**
+  (`mkdir -p`); se apontar para um arquivo, é erro (RN-435). No **Linux**, só é
+  aceita dentro do `$HOME`, conferido antes da criação (RN-434). A navegação de
+  pastas **não** fica presa a ela, de propósito (`src/fs-browser.ts`).
+- `--token`: um Personal Access Token (`brb_...`), gerado em **Configurações do
+  projeto -> Tokens de acesso**, ou a variável `BRABO_ACCOUNT_TOKEN`. Nunca é
+  gravado em disco. Sem token, autentica pela chave de dispositivo local (JWT
+  EdDSA curto, assinado a cada tentativa de conexão).
+- `--api-url`: flag -> `BRABO_API_URL` -> `apiUrl` do
+  `brabo-runner.config.json` -> `http://localhost:3000`.
+- `--base`: a **base de projetos** desta máquina, sob a qual cada projeto é uma
+  subpasta (ADR 0151, RN-529). Sem a flag, é lida de
+  `$XDG_CONFIG_HOME/brabo/runner.json` (senão `~/.config/brabo/runner.json`),
+  onde o instalador a grava. Sem flag e sem arquivo, o runner roda sem base.
 
-### The base and `--dir` are different things, and one does not invalidate the other
+### Base e `--dir` são coisas diferentes
 
-`--dir` is the root of **this** project; the base is where a **new** project
-folder is born. A project whose folder is outside the base is still
-perfectly valid: the base is a **creation** rule, and the validation of
-`--dir` (RN-434/RN-435) does not consult it. It is the same prohibition the api
-already declares in writing in `project-workspaces-root.ts` for
-`BRABO_PROJECTS_BASE` (RN-500/RN-501).
+`--dir` é a raiz **deste** projeto; a base é onde nasce a pasta de um projeto
+**novo**. Um projeto fora da base continua válido: a base é regra de
+**criação**, e a validação do `--dir` não a consulta. A base é **local** e
+nunca chega pela rede; o servidor manda só o **segmento relativo** (ADR
+0130/0144). A base é recusada, com motivo nomeado, quando é relativa, tem `..`,
+é `/`, é um arquivo, está fora do `$HOME` no Linux ou fica dentro da pasta deste
+projeto (ou é igual a ela). Recusa vinda da **flag** encerra com código 2; vinda
+do **arquivo**, vai para o `stderr` e o runner segue sem base.
 
-The base is **local** and never arrives over the network: whoever executes owns the root,
-and what the server sends is the **relative segment** (the invariant of ADR
-0130/0144). What the base refuses, with a named reason: a relative path, one with
-`..`, `/`, an existing file, outside `$HOME` on Linux (the same rule
-as `--dir`), and a base that is **inside** this project's folder or equal
-to it, in which case every new project would be born inside this one. The opposite
-direction (the project folder inside the base) is the normal arrangement.
+Com base consentida, o runner declara a capacidade `workspace` no `join` e
+atende `workspace_create` (RN-532): `mkdir -p` e `git init`, ou clone quando o
+pedido traz URL de repositório (a credencial vai em `env` e o clone roda no
+**host**, ADR 0145). No sucesso, ele empurra o `workspace_confirm`, a única
+mensagem que grava `workspace_verified_at`. Os erros são nomeados (`sem-base`,
+`segmento`, `nao-e-pasta`, `mkdir`, `git`). O `estado.dir` **não muda**: trocar
+a raiz de contenção do `guard.ts` por uma mensagem de rede seria mover uma
+fronteira.
 
-A refusal coming from the **flag** ends the process with code 2; a refusal coming from the
-**file** is reported on `stderr`, names what is lost, and the runner carries on without a
-base: bringing down an agent that serves a project because of a
-configuration it does not use yet would be disproportionate. A file that
-exists and does not declare `base` is an absence, not a refusal.
+### A credencial de git não entra no container (RN-558, RN-676)
 
-This is **best-effort**, like `guard.ts` and `espelho-guard.ts`: the security
-boundary remains authentication + approval pipeline + the
-consent of whoever ran the CLI.
+Com o container do projeto de pé, todo comando vai por `docker exec`, e a porta
+de Docker **não tem campo `env`**, de propósito (ADR 0130). Por isso:
 
-### What the base ENABLES: `workspace_create` (RN-532)
+- o `git fetch` autenticado, marcado pelo engine com `gitCredenciado: true` e
+  com `env` não vazio, roda no **host**, na mesma pasta (é o bind mount de
+  `/work`) (ADR 0193);
+- um `env` **sem** a marca, com container ativo, é **recusado** antes de
+  executar qualquer coisa, com uma saída que diz o que houve e que nada foi
+  executado, sem citar nomes nem valores das variáveis.
 
-With a consented base, this runner declares a fourth capability in the `join`,
-`workspace`, and starts serving the `workspace_create` message (ADR 0151
-points 3 to 6). The server sends the `projectId` and the **relative segment** to the
-base (never an absolute path); the runner does `mkdir -p` and then
-`git init`, or clones, when the request carries a repository URL, in which case the
-credential travels in `env` and the clone runs on the **HOST**, through the same
-mechanism as `exec` (ADR 0145).
+### Agente de MÁQUINA: sem `--project`, uma conexão por projeto (RN-544)
 
-When it succeeds, it pushes the `workspace_confirm` that already existed, and
-that one, and only that one, WRITES. No new write route was
-created, and the only path that stamps `workspace_verified_at` is still a single one. The
-`workspace_create_result` only unblocks the requester: success with the final
-path, or a **named** error (`sem-base`, `segmento`, `nao-e-pasta`, `mkdir`,
-`git`).
-
-Two things worth recording. The `workspace` capability is the only one whose
-declaration depends on the **state of this run** and not on the binary version:
-without a base there is nowhere to create a folder, and declaring it anyway would be the silent
-defect that the negotiation exists to prevent. And `estado.dir` **does not change**:
-the created folder is the project's from the server's point of view, but the root that
-`guard.ts` uses to contain approved commands is still that of this run;
-swapping it at runtime would move a containment boundary because of a
-network message.
-
-### The git credential does NOT enter the container, and the refusal says so (RN-558)
-
-Once this runner has started the project container (`container_start`, ADR 0137),
-it routes **every** command into it through `docker exec`, and the product's Docker
-port **has no `env` field**, on purpose (ADR 0130: no free `-e` at all).
-The git credential (ADR 0056) only exists in the environment of the child process of the
-**HOST** path.
-
-Until RN-558 the command ran anyway, with the credential helper installed
-and the variables **empty**: `git fetch` failed authentication, and whoever
-investigated hunted for a token, permission or network issue. And that is the **common** path, not
-an edge case: the `running` container that the server requires before any git
-operation (RN-507) only exists because **this same runner** started it.
-
-Now the runner **refuses** that pair before executing anything, with an output
-that says what happened, why, and that **nothing** was executed. The refusal
-never cites the names or values of the variables, only how many there were.
-
-**Since ADR 0193 (RN-676) the credentialed git runs on the HOST:** the engine marks the
-authenticated `git fetch` with `gitCredenciado: true`, and this runner, with the mark
-**and** a non-empty `env`, runs the command on the host even with the container up,
-in the same folder, since it is the bind mount of `/work`. The dev agent's commands
-still go to `docker exec`, which still has no `env`. An `env` **without** the mark,
-with an active container, is still refused as above: it is the engine's mark, and not the
-credential, that decides whether to go to the host. A local repository (no credential) is not
-affected, nor is `workspace_create`, which has always run on the host.
-
-### MACHINE agent: no `--project`, one connection per project (RN-544)
-
-With a **machine device key** (ADR 0154, RN-543) and a **consented
-base**, `brabo-runner` runs without `--project`: it queries
-`GET /runner/projects` and opens **one connection per project** the route lists,
-each in the folder `<base>/<workspaceDirName>`.
+Com uma **chave de dispositivo de máquina** (ADR 0154, RN-543) e uma **base
+consentida**, o runner roda sem `--project`: consulta `GET /runner/projects` e
+abre uma conexão por projeto listado, cada uma em `<base>/<workspaceDirName>`.
 
 ```sh
 # a base vem do instalador (~/.config/brabo/runner.json) ou de --base
 brabo-runner --api-url https://brabo.exemplo
 ```
 
-The mode with `--project` **did not change at all**: it remains the path of
-whoever has a folder configured by the old browser flow (ADR 0118,
-retired in ADR 0203) or uses explicit flags, with a single
-connection. The **two** conditions of the new mode are mandatory and for
-different reasons: the machine credential is what the route accepts, and the base is where
-each project's folder is derived from. Without a base, running without `--project` falls into the
-usage block saying exactly that.
+- Com ao menos uma conexão viva, a lista só é consultada na partida; projeto
+  novo entra quando o agente reconecta.
+- **Lista vazia é normal e o agente FICA DE PÉ** (RN-550): reconsulta a cada
+  15s, 30s e depois 60s, para quando chega a primeira lista não vazia e imprime
+  um batimento a cada 30 consultas vazias. **Dez falhas seguidas** da consulta
+  encerram com 1.
+- Lista não vazia com todos os projetos recusados encerra com 1.
+- Teto de tentativas e recusa de join são **por projeto**: o recusado termina
+  nomeado e os outros seguem. Todo log leva o nome do projeto como prefixo.
+- Credencial presa a um projeto é recusada com 403, e a CLI repassa a mensagem
+  nomeando a correção (`--project`). `--api-url` vem da flag, de
+  `BRABO_API_URL` ou do padrão; o `brabo-runner.config.json` é por projeto e não
+  entra.
 
-This CLI **does not know** what kind its own key is: on disk, the machine key
-and the project key are the same file (a JWK with `kid`). The server knows, and
-a credential tied to a project is refused with 403 and a message of its own, which
-the CLI relays, naming the fix (`--project`).
+## Importar chaves de API locais (`credentials import`)
 
-What changes in behavior, and is worth knowing before operating:
+Subcomando INTERATIVO (AT-611, RN-927): sem TTY, sai com 2 sem ler nada. Acha as
+chaves de API de LLM que Claude Code, Codex, OpenCode, Kilo e Hermes já guardam,
+lista cada uma (ferramenta, origem, provider do Brabo, 4 últimos dígitos) e
+pergunta, item a item, se importa. Cada sim vira um `POST /runner/llm-credentials`
+com a chave de dispositivo de MÁQUINA (PAT e chave de projeto levam 403); no 409,
+pergunta se substitui. Login por assinatura só é listado. O valor da chave nunca
+é impresso.
 
-- **With at least one live connection, the list is queried only at start.**
-  A project created after that joins when the agent reconnects: re-polling
-  periodically would let a list that comes back smaller (project deleted? converted?
-  transient 500?) bring down a live connection out of ambiguity.
-- **An empty list is normal, and the agent STAYS UP waiting** (RN-550): it is the
-  state of every new installation, and with **zero** connections there is nothing to
-  bring down and no ambiguity to resolve; any project that appears is pure
-  gain. It re-queries every **15s, 30s and then 60s** (the last repeats
-  forever) and **stops re-querying** as soon as the first non-empty list
-  arrives. Waiting has no ceiling; **ten consecutive failures** of the query do: then the
-  process exits with 1 naming the number. A query that answers, including
-  an empty one, resets that counter. Every 30 queries with no project it prints a
-  heartbeat saying how many there were, so that "waiting" does not look like
-  "stuck" in `journalctl`.
-- **A non-empty list with every project refused still exits with 1.** It is
-  the declared exception to the rule above: there each refusal names a local defect
-  with its own fix, and re-querying would repeat the same lines forever.
-- **The attempt ceiling and the join refusal are PER PROJECT.** A refused project
-  (second runner on the same project, invalid ticket) or one that exhausted
-  its attempts ends on its own, **named**, and the others carry on. Only when none
-  is left does the process exit with 1, listing the outcome of each one.
-- **Every log of the loop is prefixed with the project name**: with N interleaved
-  loops, a "falha na conexão" with no owner says nothing.
-- `--api-url` in machine mode comes from the flag, from `BRABO_API_URL` or from the default:
-  `brabo-runner.config.json` is **per project** and does not take part.
-
-The mirror (RN-516) and `workspace_create` (RN-532) remain identical: both
-are per project and travel in the `join` grant of **that** connection, which is what
-already makes them correct with N. Since RN-545, `service install --machine` puts this
-process up as a user service; see *User service*, below.
-
-### Running straight from the monorepo checkout (without installing via npm)
-
-```bash
-git clone <o repositório do Brabo>
-cd brabo
-pnpm install
-pnpm --filter runner start -- --project <projectId> --dir <pasta-absoluta> --token brb_...
-```
-
-Requires **Node.js 22.6 or newer** (the native *type stripping* of `.ts`
-that this path uses only exists from that version on).
-
-### macOS: the `node-pty` `spawn-helper` gets the execute bit at startup (AT-114)
-
-The `node-pty@1.1.0` tarball ships `prebuilds/darwin-<arch>/spawn-helper` with
-mode `0644`, and neither `pnpm install` nor `npm install` marks it executable.
-`node-pty` EXECUTES that file every time a terminal is opened; without the bit, the error is
-`posix_spawnp failed`, the same as for a missing file. That is why, under **Node** (from
-source, as above, and through the `npm install -g` package), the runner checks the
-`spawn-helper` when loading `node-pty` (`src/spawn-helper.ts`): macOS only,
-idempotent (an already executable file is not touched), looking in the SAME order as
-`node-pty` (`build/Release`, `build/Debug`, `prebuilds/darwin-<arch>`). If the
-bit is missing, it adds it and says so on `stderr`. If the `spawn-helper` (or
-`pty.node`) does not exist, or if the `chmod` is refused (a global install
-by another owner), the runner STOPS with an error naming the path and the fix
-(`chmod +x "<caminho>"`), instead of failing on the first terminal. Under `pnpm` the
-file is a hardlink of the store, so the `chmod` also applies to the store.
-
-The standalone binary does not depend on this: it embeds the content of the
-`spawn-helper` and extracts it with `0755` (`native-pty-loader.ts`). And this is not the
-Bun bug (oven-sh/bun#25822), which fails the binary even with the right bit.
-
-That Bun bug is MEASURED (AT-342): under Bun, the `tty.ReadStream` with which
-`node-pty` reads the PTY is an `fs.ReadStream`, and the first read with no data on the
-non-blocking fd surfaces as `EAGAIN`, destroys the stream and closes the fd; the terminal
-stops receiving output after the first chunk, on any Unix platform.
-Under Bun (the binary, or `bun run` in dev) the runner swaps that reader, only
-during `spawn`, for its own reader of the same fd that waits and retries on
-`EAGAIN` (`leitor-de-pty.ts`; the idle fd is polled at most every 32 ms).
-Under Node nothing changes. `--self-test-pty` does two round trips with a pause between
-them, and it is the pause that fails the old reader; before, on Linux, the proof
-passed because the first read brought the echo and the reply together. On Windows
-the self-test uses `cmd.exe` (there is no `/bin/cat`) and counts the marker without the
-ConPTY control sequences.
-
-## Import local API keys (`credentials import`)
-
-AT-611, RN-927. An INTERACTIVE subcommand (it refuses without a TTY, exiting 2 without reading anything;
-the service unit never runs it). It finds the LLM API keys that Claude Code,
-Codex, OpenCode, Kilo and Hermes already store, lists each one (tool, origin,
-Brabo provider, last 4 digits) and, item by item, asks whether to import. Each
-yes becomes a `POST /runner/llm-credentials` with the folder's MACHINE device key
-(PATs and project keys get 403); on 409 it asks whether to replace. Subscription
-login is only listed, never importable. The key value is never
-printed. The credential belongs to the ACCOUNT of whoever runs it; the agents spend the one of the
-workspace holder (RN-058). API: `--api-url`, `BRABO_API_URL` or the local config.
-
-```bash
+```sh
 brabo-runner credentials import
 ```
 
-## Device key through the terminal (`device-key create | finish`)
+## Chave de dispositivo pelo terminal (`device-key create | finish`)
 
-The Ed25519 pair can be born **on this machine**, without going through the browser (ADR
-0155 point 4, RN-551); this is how the installer pairs the agent on a new
-installation. The private half **never travels**.
+O par Ed25519 nasce **nesta máquina**, sem navegador (ADR 0155, RN-551); é assim
+que o instalador pareia o agente. A metade privada **nunca viaja**.
 
 ```sh
-# 1) gera o par aqui e imprime a JWK PÚBLICA (uma linha, no stdout)
+# 1) gera o par e imprime a JWK PÚBLICA (uma linha, no stdout)
 PUB=$(brabo-runner device-key create)
 
-# 2) registre essa pública na api — quem faz isso é quem tem a credencial
-#    para registrar (o instalador, com o service token), nunca este CLI
+# 2) quem tem a credencial (o instalador) registra a pública na api
 ID=$(… POST {"name": "…", "publicKeyJwk": '"$PUB"'} … | jq -r .id)
 
-# 3) carimba o `kid` (que É o id do registro) e grava a chave de verdade
+# 3) carimba o `kid` (o id do registro) e grava a chave de verdade
 brabo-runner device-key finish --id "$ID"
 ```
 
-- **There are two steps because of the `kid`.** It is the registration id **on the
-  server** (RN-475), the only link between the file on disk and the public
-  key the api keeps, and it only exists after registration. A private key
-  written before it is born useless, and the CLI always refuses it. That is why `create`
-  writes to `brabo-runner-device-key.jwk.json.parcial`, a name the runner
-  does **not** look for: the file it reads is either complete or does not exist.
-- **Where:** `$XDG_CONFIG_HOME/brabo/` (otherwise `~/.config/brabo/`), next to
-  `runner.json`. It is the **machine's** key, and it has no project folder to
-  live in. `--dir <folder>` points to another destination (for example, a project's
-  folder). The private key is written in **mode 600**; the folder, when this command
-  creates it, in 700.
-- **stdout is for scripts, stderr is for people.** `create` prints only the public
-  JWK on stdout; `finish`, only the file path. Everything else,
-  including the next command to run, goes to stderr.
-- **Overwriting a complete key is refused**, and there is no `--force`: silently replacing the
-  identity of an already paired machine would leave an agent
-  signing with a key the server does not know. Revoke the current key,
-  delete the file and start again from `create`.
-- This CLI does **not** claim what kind of key it creates: on disk, the
-  machine key and the project key are the same file. The route that
-  registered the public key knows.
+- São dois passos por causa do `kid`, que só existe depois do registro
+  (RN-475). O `create` grava em `brabo-runner-device-key.jwk.json.parcial`, nome
+  que o runner não procura.
+- Fica em `$XDG_CONFIG_HOME/brabo/` (senão `~/.config/brabo/`); `--dir <pasta>`
+  muda o destino. Chave privada em modo 600, pasta criada em 700.
+- stdout é para scripts, stderr é para gente.
+- Sobrescrever uma chave completa é recusado, sem `--force`: revogue a atual,
+  apague o arquivo e recomece do `create`.
 
-## User service (`service install | uninstall | status`)
+## Serviço de usuário (`service install | uninstall | status`)
 
-For the runner to start with your session instead of living in an open
-terminal, install it as a **user service**: `systemd --user` on Linux,
-`LaunchAgent` on macOS (ADR 0147, RN-518):
+Para o runner subir com a sua sessão: `systemd --user` no Linux, `LaunchAgent` no
+macOS (ADR 0147, RN-518).
 
 ```sh
-# de dentro de uma pasta com brabo-runner.config.json (o antigo fluxo do navegador)
+# de dentro de uma pasta com brabo-runner.config.json
 brabo-runner service install
 brabo-runner service status
 brabo-runner service uninstall
 
-# ou, para o agente desta MÁQUINA (atende todos os seus projetos em modo runner)
+# ou o agente desta MÁQUINA (atende todos os seus projetos em modo runner)
 brabo-runner service install --machine
 brabo-runner service status --machine
 brabo-runner service uninstall --machine
 ```
 
-- **User level, always.** Never a system service, never root: running
-  `service install` as root is **refused**, without writing any file. The
-  runner runs with the privileges of whoever executes it **by design**, and that premise
-  underpins the three boundaries described in *Security*, below.
-- **Windows is out of scope**, by declared decision: a user service
-  there is a third mechanism, not a variation of the other two. The three subcommands
-  refuse, naming the platform; running in the foreground keeps working.
-- **TWO kinds of unit, and they coexist** (ADR 0154 point 4, RN-545). The
-  **project** one (`brabo-runner-<projectId>.service` /
-  `dev.brabo.runner.<projectId>`) is the behavior as always, byte for byte:
-  `--project` and `--dir` stay optional, and without them the
-  `brabo-runner.config.json` and the current folder apply. The **machine** one
-  (`brabo-runner.service` / `dev.brabo.runner`, no suffix) runs the agent from
-  *MACHINE agent* described above: one process, one connection per project.
-  The names do not collide: the `projectId` is never empty, so the project one always
-  has a `-` where the machine one has a `.`.
-- **The new kind is an explicit opt-in (`--machine`)**, and never "the absence of
-  `--project`": the normal path today is to run `install` with no flag at all from
-  inside the configured folder, with `brabo-runner.config.json` answering
-  who the project is; treating that as "machine" would silently convert the
-  installation of whoever already uses the product. `--machine` together with `--project` is
-  a named refusal.
-- **`install --machine` requires a consented base** (RN-529) and refuses a folder
-  that has `brabo-runner.config.json`: without a base the machine agent does not start, and
-  with that file in the `WorkingDirectory` the service would silently start in
-  **project** mode, serving just one. `XDG_CONFIG_HOME` is
-  **frozen** into the unit when it is set (it decides where the base file lives,
-  and neither manager passes on the shell environment); the base
-  **value** is not: changing it means editing the file and restarting.
-- **`install` refuses when the OTHER kind is already installed**, naming each
-  unit and the `uninstall` of each, without removing or writing anything. Both together
-  would be two processes fighting over the same project, and the server would deny one
-  of them. There is no `--force`.
-- **The credential is the folder's device key**, and only that.
-  `--token`/`BRABO_ACCOUNT_TOKEN` are ignored on purpose: writing them to
-  a unit file would leave them on disk, and this CLI never writes a credential to
-  disk.
-- **`uninstall` removes three things**: the unit file, the
-  `brabo-runner.config.json` and the `brabo-runner-device-key.jwk.json`. The folder to
-  clean is read from the unit file itself (the record of what was installed),
-  never guessed from the current directory; without a unit, pass `--dir`. The
-  key leaves **this disk**: it is **not** revoked on the server, which is done
-  from the project screen.
-- **`uninstall` with no kind named REFUSES** and lists what exists on disk, with
-  the exact command for each. It does not inherit the default of `status` on purpose:
-  reading the wrong kind costs a wrong line, removing the wrong one costs a
-  service and a device key.
-- **`status` answers one of four states**, each with its own sentence and exit code
-  and none collapsed into another: not installed (`4`), installed and running
-  (`0`), installed and stopped (`3`), and installed with the service manager
-  not responding (`5`); this last one is never presented as "stopped". With both
-  kinds on disk, the **code remains that of the unit asked about** (the
-  four do not become eight nor add up), and the other one appears as **text**, as
-  presence read from DISK, saying its state was not asked of the
-  manager. Without `--machine` and with no resolvable project, the answer is about the
-  **machine** unit, and the output names `--project` for whoever wanted the other.
+- **Sempre nível de usuário.** `service install` como root é recusado. Windows
+  fica fora, por decisão: os três subcomandos recusam nomeando a plataforma.
+- **Dois tipos de unit, que coexistem no disco** (ADR 0154, RN-545): a de
+  **projeto** (`brabo-runner-<projectId>.service` /
+  `dev.brabo.runner.<projectId>`) e a de **máquina** (`brabo-runner.service` /
+  `dev.brabo.runner`). `--machine` é opt-in explícito; com `--project`, é
+  recusa nomeada.
+- `install --machine` exige base consentida e recusa uma pasta com
+  `brabo-runner.config.json`. `install` recusa quando o OUTRO tipo já está
+  instalado, sem `--force`.
+- A credencial é só a chave de dispositivo; `--token`/`BRABO_ACCOUNT_TOKEN` são
+  ignorados para não irem parar num arquivo de unit.
+- `uninstall` remove a unit, o `brabo-runner.config.json` e a
+  `brabo-runner-device-key.jwk.json` (a pasta vem da própria unit; sem unit,
+  passe `--dir`). A chave **não** é revogada no servidor. Sem tipo nomeado,
+  `uninstall` recusa e lista o que existe.
+- `status` responde um de quatro estados: não instalado (`4`), rodando (`0`),
+  parado (`3`) e gerenciador sem resposta (`5`).
+- O `PATH` (e o `XDG_CONFIG_HOME`, quando definido) é congelado na unit: se
+  mudou, rode `service install` de novo. Unit instalada por versão antiga com
+  `WorkingDirectory=` entre aspas, ou com `%`/espaço no `PATH` ou no
+  `XDG_CONFIG_HOME` (AT-095), também se resolve reinstalando. Confira o valor que
+  o systemd entendeu com
+  `systemctl --user show -p Environment brabo-runner.service`.
 
-The `PATH` at install time is **frozen** inside the unit (both managers
-give the service a minimal PATH, and the runner calls `git` and
-`docker`): if your PATH changed, run `service install` again.
+## Reconexão
 
-> **A unit installed by an earlier version does not start: reinstall.** Until this
-> fix, `WorkingDirectory=` was written **in quotes**, and systemd does not unquote
-> that directive (unlike `ExecStart=`, where quotes are right): the value
-> no longer started with `/`, the unit was refused at load
-> (`Loaded: bad-setting`, `WorkingDirectory= path is not absolute`) and **never
-> started**, in both kinds. There is no partial fix and no file to
-> edit: `service install` overwrites the whole file, so just run it
-> again. `status` and `uninstall` still read the folder of a unit in the old state,
-> on purpose: whoever is in it must not lose the way out as well.
-> `%` is the only character the folder escapes (`%%`), because that directive
-> goes through specifier expansion; a space goes literal, since the whole line
-> is the path.
->
-> **`XDG_CONFIG_HOME` or `PATH` with `%`, space, quotes or a backslash: reinstall
-> too.** Until AT-095 both were written raw (`Environment=XDG_CONFIG_HOME=...`),
-> and `Environment=` splits on spaces and expands `%`: the unit started, but with
-> `/home/eu/50%off com espaco` the service received `/home/eu/50<id-do-os>ff` and
-> looked for the key in a folder that does not exist. Now the whole assignment goes
-> in quotes and escaped. A line break in those two values is refused at
-> `install`. Check the value systemd understood, never the file:
-> `systemctl --user show -p Environment brabo-runner.service`.
+Quando a conexão cai, o runner **pede um ticket NOVO** e tenta de novo com
+espera de `1s, 2s, 5s, 10s, 30s` e teto de 10 tentativas seguidas sem sucesso.
+Recusa de join (ticket inválido, outro runner no projeto) não é transitória:
+encerra na hora, com a mensagem.
 
-## Reconnection
+O auto-reconnect da lib `phoenix` fica **desligado** (`reconnectAfterMs`): o
+ticket é de **uso único** (RN-108) e o reconnect da lib repete o ticket já
+consumido. Uma versão antiga saiu com ele ligado e gerava recusa a cada ~5s e
+**429 na tela web do dono da conta**. Se aparecer 429 sem explicação, confira se
+o binário do runner está atualizado.
 
-When the connection drops, the runner **asks for a NEW ticket** and tries again, with
-backoff (`1s, 2s, 5s, 10s, 30s`) and a ceiling of 10 consecutive attempts without
-success; past that, it gives up and tells you to run it again. A refusal to
-join the channel (invalid ticket, another runner already connected on this project)
-is **not** transient: it exits right away, with the message, without an
-automatic loop.
+## macOS e o `spawn-helper` do `node-pty` (AT-114, AT-342)
 
-The built-in auto-reconnect of the `phoenix` library is deliberately **off**
-(`reconnectAfterMs`), and that is no detail: the socket ticket is **single use**
-(RN-108), and the lib's reconnect repeats the SAME parameters, that is,
-the same already-consumed ticket, refused every time. An earlier version of this
-CLI shipped with it ON (the code comment said otherwise) and the measured
-effect was: a refusal every ~5.13s indefinitely, and **429 (rate limit)
-on the browser screen of the account owner**: the api limit is per
-user, and the one blowing it was the runner. If you see 429 on the web with no explanation,
-check whether the runner binary is up to date.
+O tarball do `node-pty@1.1.0` traz `prebuilds/darwin-<arch>/spawn-helper` sem o
+bit de execução, e sem ele o terminal falha com `posix_spawnp failed`. Sob
+**Node**, o runner confere e corrige esse bit ao carregar o `node-pty`
+(`src/spawn-helper.ts`); se não conseguir, PARA com um erro que nomeia o caminho
+e a correção (`chmod +x "<caminho>"`). O binário standalone já extrai o
+`spawn-helper` com `0755` (`native-pty-loader.ts`).
 
-## Security
+Sob **Bun**, o `tty.ReadStream` que o `node-pty` usa morre no primeiro `EAGAIN`.
+O runner troca esse leitor, só durante o `spawn`, por um leitor próprio do mesmo
+fd que espera e tenta de novo (`leitor-de-pty.ts`). O `--self-test-pty` prova
+isso com duas voltas e uma pausa entre elas.
 
-The runner's security boundary **is not sandboxing**; it is the composition of
-three things: authentication (the Personal Access Token of your account), the usual
-approval pipeline (every agent command still is born a proposed
-action, subject to the project's policy) and your consent to run this
-binary on your own machine, with your privileges.
+## Segurança
 
-## Tests, typecheck and lint of this workspace
+A fronteira de segurança do runner **não é sandbox**: é a composição de três
+coisas, a autenticação (o token ou a chave de dispositivo da sua conta), o
+pipeline de aprovação de sempre (todo comando de agente nasce como ação
+proposta, sujeita à política do projeto) e o seu consentimento em rodar este
+binário na sua máquina, com os seus privilégios. `guard.ts` e
+`espelho-guard.ts` são best-effort por desenho.
 
-```bash
-pnpm --filter runner test
-pnpm --filter runner typecheck
-pnpm --filter runner lint
+## Desenvolvimento
+
+Exige Node.js 22.6 ou mais novo e pnpm (versão em `packageManager`). Branches
+permanentes `dev` e `main`; tag só por workflow.
+
+```sh
+pnpm install
+pnpm start -- --project <projectId> --dir <caminho-absoluto> --token brb_...
+pnpm lint        # oxlint --deny-warnings em src/ e scripts/
+pnpm typecheck
+pnpm test
+pnpm build       # dist/index.cjs (o que vai para o npm)
+pnpm smoke       # exercita o dist/ empacotado
 ```
 
-The `lint` is the same `oxlint` as the web app, in check mode (no `--fix`), over
-`src/` and `scripts/`, with the `correctness` category as an error and
-`--deny-warnings`; it is the "Oxlint (runner)" step of the `Lint` job in `ci.yml`.
+Esses são os passos do `ci.yml`. O binário standalone exige
+[Bun](https://bun.sh) e só compila para a plataforma CORRENTE:
 
-Build the standalone binary (requires [Bun](https://bun.sh) installed,
-`curl -fsSL https://bun.sh/install | bash`, only for the CURRENT platform; it never
-cross-compiles a native addon):
-
-```bash
-pnpm --filter runner build:bin
-pnpm --filter runner smoke:bin
+```sh
+pnpm build:bin
+pnpm smoke:bin
 ```
 
-## More
+## Mais
 
-Full documentation, including the architecture decision behind the local
-runner, in [ADR 0103](https://github.com/daneiel/brabo/blob/main/docs/adr/0103-runner-local-execucao-na-maquina-do-usuario.md),
-[ADR 0104](https://github.com/daneiel/brabo/blob/main/docs/adr/0104-execution-mode-tres-valores-e-workspace-verificado-pelo-runner.md),
-[ADR 0105](https://github.com/daneiel/brabo/blob/main/docs/adr/0105-personal-access-token-do-runner-escopado-por-construcao.md),
-[ADR 0106](https://github.com/daneiel/brabo/blob/main/docs/adr/0106-distribuicao-do-runner-via-tsup-e-npm-publish.md),
-[ADR 0107](https://github.com/daneiel/brabo/blob/main/docs/adr/0107-navegacao-de-pasta-local-via-o-runner.md)
-and [ADR 0112](https://github.com/daneiel/brabo/blob/main/docs/adr/0112-binario-standalone-do-runner-via-bun-build-compile.md)
-(the standalone binary).
+As decisões de arquitetura do runner local estão nos ADRs do `brabo`:
+[0103](https://github.com/viralabs-dev/brabo/blob/main/docs/adr/0103-runner-local-execucao-na-maquina-do-usuario.md)
+(runner local),
+[0104](https://github.com/viralabs-dev/brabo/blob/main/docs/adr/0104-execution-mode-tres-valores-e-workspace-verificado-pelo-runner.md)
+(modo de execução),
+[0105](https://github.com/viralabs-dev/brabo/blob/main/docs/adr/0105-personal-access-token-do-runner-escopado-por-construcao.md)
+(token),
+[0106](https://github.com/viralabs-dev/brabo/blob/main/docs/adr/0106-distribuicao-do-runner-via-tsup-e-npm-publish.md)
+(distribuição pelo npm),
+[0107](https://github.com/viralabs-dev/brabo/blob/main/docs/adr/0107-navegacao-de-pasta-local-via-o-runner.md)
+(navegação de pastas) e
+[0112](https://github.com/viralabs-dev/brabo/blob/main/docs/adr/0112-binario-standalone-do-runner-via-bun-build-compile.md)
+(binário standalone).
 
-## License
+## Licença
 
-MIT. The third-party software notices, with the written offer for the LGPL libraries of the Bun runtime, are in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+MIT. Os avisos de software de terceiros, com a oferta escrita para as
+bibliotecas LGPL do runtime do Bun, estão em
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
