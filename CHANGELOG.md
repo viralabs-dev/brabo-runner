@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- O runner passa a sair só como binário da Release: o `publish-runner.yml` (publicação no npmjs) foi removido e `npm install -g @brabo/runner` sai do README, do CLAUDE.md e dos avisos de terceiros; não há plano B por npm (AT-774).
+
 - CI: todo `runs-on` fixa `ubuntu-26.04` no lugar de `ubuntu-latest`, e o `create-github-app-token` usa `client-id` no lugar do `app-id` obsoleto; os runs saem sem anotação de aviso (AT-772).
 
 - Ko-fi do mantenedor: `.github/FUNDING.yml` (botão Sponsor) e seção Apoie no README (AT-768).
