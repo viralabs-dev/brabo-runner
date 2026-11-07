@@ -61,7 +61,7 @@ jobs:
   release:
     name: Release da tag
     if: github.event_name != 'workflow_dispatch' || inputs.tag != ''
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 5
     permissions:
       contents: write
@@ -90,7 +90,7 @@ jobs:
       matrix:
         include:
           - target: linux-x64
-            os: ubuntu-latest
+            os: ubuntu-26.04
           # GitHub-hosted, Cobalt 100 (Ubuntu 24.04) — confirmado disponível
           # em repositório PÚBLICO sem custo extra em 2026 (a oferta de ARM
           # hospedado mudou desde o preview de jan/2025; este label é o
@@ -341,7 +341,7 @@ jobs:
     # anexar nem manifesto a assinar. A condição é de JOB e lê `inputs`
     # direto — `steps.alvo` é do próprio job e não alcança este nível.
     if: github.event_name != 'workflow_dispatch' || inputs.tag != ''
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     # 600s de espera pela Release + 1200s pelos binários + o trabalho em si.
     # Era 10 — que bastava enquanto o `needs:` fazia a espera por fora.
     timeout-minutes: 40

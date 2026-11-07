@@ -40,7 +40,7 @@ concurrency:
 jobs:
   publish:
     name: Publicar @brabo/runner
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     env:
       # `secrets` não existe no `if:` de um step — só em `env`. Mesmo padrão
