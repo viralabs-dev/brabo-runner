@@ -1720,7 +1720,7 @@ recusa nomeada.
   (`tratarExec`); `apps/runner/src/channel.ts:71` (`gitCredenciado`), `:627`
   (`gitCredenciado`); `apps/engine/lib/engine/runners/runner_router.ex:93`
   (`exec_git_credenciado`), `:98` (`despachar_exec`);
-  `apps/engine/lib/engine/actions/workspace/runner_git.ex:338` (`exec`), `:426`
+  `apps/engine/lib/engine/actions/workspace/runner_git.ex:357` (`exec`), `:443`
   (`despachar`); `apps/engine/lib/engine_web/channels/terminal_channel.ex:609`
   (`git_credenciado`); `apps/engine/lib/engine/runners/credencial_de_git.ex:93`
   (`mensagem`)

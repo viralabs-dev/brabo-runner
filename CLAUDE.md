@@ -5,7 +5,7 @@ CLI `brabo-runner` que roda na máquina do usuário (ADR 0103). Terminal por PTY
 > Partido do `CLAUDE.md` do monorepo `daneiel/brabo` (hoje `brabo-legacy`, `dev` @ `1586158973`) na AT-708 (EP-033, ADR 0252). Copiado, não resumido: o que era de outro repo foi cortado e os caminhos do monorepo viraram a raiz deste repo (ou `brabo-<x>:caminho`). Caminhos sem prefixo que não existem aqui (`docker/`, `deploy/`, `install.sh`, `e2e/`, `scripts/dev/`, `scripts/ci/` fora do `brabo-ci`) moram no `brabo-infra`, no `brabo-qa` ou no `brabo-ci`. O resto das regras mora no `CLAUDE.md` da pasta-mãe (`brabo-workspace`, clonado em `~/dev/brabo/CLAUDE.md`) e no de cada repo irmão.
 
 ## Stack (decidida — não proponha alternativas)
-- `brabo-runner`: CLI Node/TS na máquina do usuário (ADR 0103), distribuído como binário standalone e por `npm install -g @brabo/runner`.
+- `brabo-runner`: CLI Node/TS na máquina do usuário (ADR 0103), distribuído só como binário standalone na Release (AT-774).
 - Contratos: `@brabo/docker-port` vem do `brabo-contracts` por TAG, como fonte TypeScript; o runner usa `module.registerHooks` para rodar sem bundler.
 
 ## Repositório, branches e PR (vale para todo repo `brabo-*`)
@@ -56,6 +56,8 @@ CLI `brabo-runner` que roda na máquina do usuário (ADR 0103). Terminal por PTY
   archived".
 - PR do Dependabot entra pela `dev`, nunca direto na `main`; na `dev` ele não espera aprovação humana (ADR 0236) e a `main` segue com a escada inteira. Dependência de linguagem só por segurança (`open-pull-requests-limit: 0`), `github-actions` e `docker` semanais, `target-branch: dev`. O `dependabot-para-dev.yml` do `brabo-ci` fecha ou redireciona o PR de segurança que o GitHub abre contra a `main`.
 - Merge em branch protegida (`dev`/`main`) é SEMPRE manual do usuário, sem opção de automatizar. A política de PR, escada, promoção e carimbo de tag vem dos workflows reutilizáveis do `brabo-ci`, fixados por SHA com `# vX` no `uses:`. Imagem de terceiro por digest com a tag inline. Segredo nunca é impresso; teste nunca roda contra o Postgres da instalação.
+- Ref de doc quebrada reprova no próprio PR: o check `refs` (reutilizável `refs-com-simbolo` do `brabo-ci`, não obrigatório) confere cada `caminho:N` (`símbolo`) das RNs, e o artefato `refs-patch` traz a reancoragem (`gh run download <id> -n refs-patch && git apply refs.patch`) (AT-782).
+- Regressivo por funcionalidade (AT-769): PR que toca uma funcionalidade do catálogo (`brabo-qa/funcionalidades.yml`, mapa por caminho) ajusta o regressivo dela no `brabo-qa` contra a `dev`, ou diz no card por que não precisa. Na PR para a `dev` o check `Regressivo do brabo-qa` só atesta (nunca obrigatório); na PR para a `main` o `E2E do brabo-qa` roda o catálogo inteiro e bloqueia, salvo `/qa-aceitar`.
 
 ## Convenções (agentes, telas e testes)
 - Arquivo que outro PROGRAMA vai parsear se prova contra o PARSER dele, nunca
@@ -119,10 +121,9 @@ CLI `brabo-runner` que roda na máquina do usuário (ADR 0103). Terminal por PTY
   numa direção só e NUNCA apaga — arquivo apagado na origem permanece no
   destino —, com guarda IRMÃ de `guard.ts` (mesma dupla passada, mesma
   ressalva de TOCTOU), e é disparado por MOMENTO NOMEADO do engine
-  (`mirror_sync`, hoje o commit), nunca por watcher. TRÊS caminhos de
+  (`mirror_sync`, hoje o commit), nunca por watcher. DOIS caminhos de
   distribuição: clonar o
-  monorepo (dev), `npm install -g @brabo/runner` via `tsup` + `npm publish`
-  (ADR 0106), e binário standalone via `bun` (`bun build --compile`, ADR
+  repo (dev) e binário standalone via `bun` (`bun build --compile`, ADR
   0112) — o `.node` nativo do `node-pty` embutido por `with { type: 'file'
   }` e extraído para um diretório real em runtime, já que `node-pty`
   resolve seu próprio addon por um `require()` de caminho COMPUTADO que o
@@ -328,7 +329,7 @@ CLI `brabo-runner` que roda na máquina do usuário (ADR 0103). Terminal por PTY
   `RunnerReadiness`, que fica byte a byte, e não dê `env` à `DockerPort`
 
 ## Documentação é parte da definição de pronto (permanente)
-- A doc deste repo mora em `docs/` (fonte pt-BR; `en`, `ru` e `zh-Hans` em `docs/i18n/`). Ao alterar código, atualize a doc da área NA MESMA mudança e mostre o diff dela junto com o do código. Não pergunte se deve: faça. NUNCA crie `website/docs/`: o site é agregado pelo `brabo`, que lê a `docs/` de cada repositório.
+- A doc deste repo mora em `docs/` e é em pt-BR por padrão (decisão do dono, 06/11/2026, ADR 0266, que reverte o ADR 0260 e a AT-745; sem `docs/i18n/` nem campo `idioma_original`). Ao alterar código, atualize a doc da área NA MESMA mudança e mostre o diff dela junto com o do código. Não pergunte se deve: faça. NUNCA crie `website/docs/`: o site é agregado pelo `brabo`, que lê a `docs/` de cada repositório.
 - Mudança de comportamento observável → entrada em `CHANGELOG.md` (Unreleased). Versão própria a partir da 1.0.0, e toda tag nasce de workflow (nunca versionar à mão).
 - Regra de negócio nova → RN-XXX com `caminho:N` (`símbolo`) e o teste que a cobre, na `docs/business-rules*` deste repo; a numeração é UMA só no produto (nunca reinicie), a âncora `{#rn-NNN}` é o contrato e não muda quando a RN muda de arquivo. Aloque o número varrendo as branches locais e o remoto (colide com frente paralela).
 - Mudança estrutural (fronteira de camada, banco, modelo de consistência, dependência pesada) → ADR novo com o próximo número; ADR aceito NUNCA é editado (o novo o referencia). Os ADRs moram no repo `brabo` (a porta de entrada do produto).
@@ -364,7 +365,7 @@ CLI `brabo-runner` que roda na máquina do usuário (ADR 0103). Terminal por PTY
   AT-114 o runner acrescenta esse bit sozinho ao carregar o `node-pty` sob Node
   (`src/spawn-helper.ts`, só darwin, erro nomeado se falta ou o
   `chmod` é recusado), provado por teste e NUNCA num macOS real. Mac Intel e
-  Windows usam `npm install -g @brabo/runner`: o proxy recusa os dois com 400
+  Windows não têm instalação (o npm saiu na AT-774): o proxy recusa os dois com 400
   próprio (`SEM_BINARIO_POR_DECISAO`, nome e ADR por plataforma), o `install.sh`
   diz isso sem baixar no Mac Intel e, no Windows, na recusa que ele já fazia da
   instalação inteira (ADR 0150). Os TRÊS lugares que enumeram alvos (matriz,
@@ -372,7 +373,6 @@ CLI `brabo-runner` que roda na máquina do usuário (ADR 0103). Terminal por PTY
   fluxo do navegador, ADR 0203) são amarrados por
   `scripts/ci/alvos-do-runner.spec.ts` — religar o Mac Intel ou o Windows é ADR
   novo, depois de o Bun corrigir, nunca só devolver as linhas da matriz
-- `NPM_TOKEN` não configurado — `publish-runner.yml` avisa e pula
 
 ## O que NÃO fazer
 - Não instalar libs sem justificar no plano. Não refatorar código de fase concluída sem pedido explícito.

@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+- Check `refs` no PR (AT-782): o `refs.yml` chama o `refs-com-simbolo` do `brabo-ci` (pin `64a1e15`) e reprova a ref `caminho:N` (`símbolo`) de RN que o PR quebra; o artefato `refs-patch` traz a reancoragem. Não é check obrigatório.
+
+- Doc: a decisão do dono de 06/11/2026 (volta ao pt-BR) passa a citar o número do ADR, 0266, no `CLAUDE.md` e no CHANGELOG (AT-783).
+
+- Regressivo por funcionalidade (AT-769, B6): a regra do card entra no CLAUDE.md e o `analista.md` ganha o item do catálogo (`brabo-qa/funcionalidades.yml`). Este repo não tem gatilho do `brabo-qa` ainda: a PR do runner recebe `neutral` até existir a spec de `runner`.
+- Vínculos nos runs (AT-773, B5): o `build-runner-binaries.yml` ganha `run-name` (`binários do runner {tag} ← tag do carimbo` na tag; `(ensaio)` no dispatch). O `publish-runner.yml` saiu antes (AT-774), então não há o `publish` do runner para ligar.
+
+- CI: repina os reutilizáveis do `brabo-ci` em `13f3697` (merge da ci#17, que inclui a ci#16): `ubuntu-26.04`, `client-id` no lugar de `app-id`, rótulo de família criado antes de aplicar, linha `Carimbo:` na tag e helper `vinculos` (AT-772, AT-773).
+- O runner passa a sair só como binário da Release: o `publish-runner.yml` (publicação no npmjs) foi removido e `npm install -g @brabo/runner` sai do README, do CLAUDE.md e dos avisos de terceiros; não há plano B por npm (AT-774).
+
+- CI: todo `runs-on` fixa `ubuntu-26.04` no lugar de `ubuntu-latest`, e o `create-github-app-token` usa `client-id` no lugar do `app-id` obsoleto; os runs saem sem anotação de aviso (AT-772).
+
+- Ko-fi do mantenedor: `.github/FUNDING.yml` (botão Sponsor) e seção Apoie no README (AT-768).
+
+- `README.md` reescrito em pt-BR, atual e enxuto (AT-766): links para `viralabs-dev/brabo` e `viralabs-dev/brabo-runner`, instalador e binários nas Releases certas, desenvolvimento pelos scripts deste repo (sem `pnpm --filter`) e a seção "Repositórios do Brabo".
+- `docs/business-rules/runner.md` volta a ser em pt-BR, sem `idioma_original` (decisão do dono de 06/11/2026, ADR 0266, que reverte o ADR 0260); as âncoras `{#rn-NNN}` não mudam. A passagem para o inglês da AT-745 (README e `docs/`) fica revertida.
+- `politica.yml`: pins do `brabo-ci` sobem para `b030fbf` (dispensa da PR do bot, ADR 0255; AT-733).
+- `THIRD_PARTY_NOTICES.md` próprio do runner (AT-727): binário (Bun 1.4.0 e as LGPL ligadas, com oferta escrita), pacotes embutidos e pacote npm; entra no `files` do `package.json` e é conferido por `src/third-party-notices.spec.ts`. Antes era cópia do aviso do produto.
 - Release por tag (AT-704): `tag-release.yml` chama o reutilizável do `brabo-ci` (v1.0.0) com o token do GitHub App do bot; `build-runner-binaries.yml` cria a Release da tag e volta a anexar `THIRD_PARTY_NOTICES.md` (oferta de fonte) ao `checksums.txt` assinado.
 - `Documentation=` da unit systemd aponta para `viralabs-dev/brabo-runner` (antes `daneiel/brabo/.../apps/runner`; a variável `BRABO_REPO` deixou de existir).
 
