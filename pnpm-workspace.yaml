@@ -3,3 +3,7 @@
 allowBuilds:
   esbuild: true
   'node-pty': true
+# Pacotes da própria org (brabo-contracts) valem logo após a publicação: a idade mínima
+# protege de terceiros, e o publish é só pela tag do nosso workflow (AT-770).
+minimumReleaseAgeExclude:
+  - '@viralabs-dev/*'

@@ -1,0 +1,18 @@
+name: contracts-alinhado
+
+# Confere que a versão do brabo-contracts é a mesma no alias do `package.json` e no lock
+# (AT-770, RN-1038). Reutilizável do brabo-ci; NÃO é check obrigatório.
+run-name: "contracts-alinhado ← #${{ github.event.pull_request.number }} (${{ github.head_ref }})"
+
+on:
+  pull_request:
+    branches: [dev, main]
+
+permissions:
+  contents: read
+
+jobs:
+  contracts-alinhado:
+    uses: viralabs-dev/brabo-ci/.github/workflows/contracts-alinhado.yml@4976af2cd947966df43bbbcae5c3c80f91ac2310  # brabo-ci dev (AT-770 R1)
+    with:
+      ci_ref: 4976af2cd947966df43bbbcae5c3c80f91ac2310

@@ -1780,3 +1780,23 @@ ganhar contorno.
 - **ADR:** [0112](../adr/0112-binario-standalone-do-runner-via-bun-build-compile.md),
   [0187](../adr/0187-runner-sem-binario-win32-x64.md)
 - **Origem:** AT-342, AT-343
+
+## AT-770 — o brabo-contracts chega por pacote do GitHub Packages
+
+### RN-1040 — O runner publicado não declara `@viralabs-dev/*` em `dependencies` {#rn-1040}
+
+O `@brabo/docker-port` chega do GitHub Packages (`npm:@viralabs-dev/brabo-docker-port@X.Y.Z`,
+alias do pnpm) e é **devDependency**: o `tsup` e o `bun build` o embutem, então o
+artefato do runner não o carrega em runtime. Um pacote que dependesse do GitHub
+Packages exigiria `.npmrc` e token de quem instala, e isso é proibido.
+
+**A regra:** `dependencies` do `package.json` não tem nenhum `@viralabs-dev/*` nem
+`@brabo/docker-port`; o alias fica em `devDependencies`, na versão exata (sem `^`).
+O `.npmrc` do repo traz só a linha do registry do escopo, sem token (o token vive no
+CI, pelo `GITHUB_TOKEN`, ou no `~/.npmrc` do dev).
+
+- **Onde:** `package.json` (`devDependencies`), `.npmrc`, `.github/workflows/ci.yml`,
+  `.github/workflows/build-runner-binaries.yml` (`packages: read`)
+- **Teste:** `src/contratos-por-pacote.spec.ts:11` (`dependencies` sem
+  `@viralabs-dev/*`), `:16` (alias exato em `devDependencies`), `:20` (`.npmrc` sem token)
+- **Origem:** AT-770
