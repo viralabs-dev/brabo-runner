@@ -5,6 +5,7 @@ on:
     branches: [dev, main]
 permissions:
   contents: read
+  packages: read # instala @viralabs-dev/* do GitHub Packages (RN-1039)
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -22,7 +23,11 @@ jobs:
         with:
           node-version: '26.10.0'
           cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: '@viralabs-dev'
       - run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm lint
       - run: pnpm typecheck
       # O spec do systemd PULA, nomeando o motivo, quando a máquina não tem systemd --user.

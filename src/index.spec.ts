@@ -31,14 +31,13 @@ import { NOME_ARQUIVO_CHAVE, NOME_ARQUIVO_CONFIG } from './device-key.ts';
  */
 
 const CLI = fileURLToPath(new URL('./index.ts', import.meta.url));
-const HOOK = ['--import', fileURLToPath(new URL('../scripts/strip-node-modules.mjs', import.meta.url))];
 
 function rodarNaPasta(
   cwd: string,
   extras: string[] = [],
   env: Record<string, string> = {},
 ): { stdout: string; stderr: string; status: number | null } {
-  const resultado = spawnSync(process.execPath, [...HOOK, CLI, ...extras], {
+  const resultado = spawnSync(process.execPath, [CLI, ...extras], {
     cwd,
     encoding: 'utf-8',
     // `INIT_CWD` vence `process.cwd()` em `lerArgumentos` — o vitest o herda
@@ -312,7 +311,7 @@ describe('agente de MÁQUINA com lista vazia FICA DE PÉ e reconsulta (RN-550)',
   it('não sai com 0: diz que ESPERA e continua vivo — era aqui que a instalação nova ficava sem agente', async () => {
     const filho = spawn(
       process.execPath,
-      [...HOOK, CLI, '--api-url', `http://127.0.0.1:${porta}`, '--base', base],
+      [CLI, '--api-url', `http://127.0.0.1:${porta}`, '--base', base],
       { cwd: dir, env: { ...process.env, INIT_CWD: dir, BRABO_ACCOUNT_TOKEN: '' } },
     );
     let saida = '';

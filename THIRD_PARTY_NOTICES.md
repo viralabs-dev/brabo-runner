@@ -52,7 +52,7 @@ Todos MIT. O texto da licença está na seção 3.
 | node-pty | 1.1.0 | Christopher Jeffrey (2012-2015) e colaboradores | sim (binding nativo) |
 | node-addon-api | 7.1.1 | Node.js API collaborators (2017) | sim (transitiva do node-pty) |
 | phoenix | 1.8.9 | Chris McCord (2014) | sim (carregado por `import()`) |
-| @brabo/docker-port | 0.0.1 (`brabo-contracts` v1.0.0) | Daniel Souza (2026), MIT do próprio Brabo | sim |
+| @brabo/docker-port | 1.2.0 (`@viralabs-dev/brabo-docker-port`, `brabo-contracts` v1.2.0) | Daniel Souza (2026), MIT do próprio Brabo | sim |
 
 ## 3. Texto da licença MIT
 

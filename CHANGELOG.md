@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- O `@brabo/docker-port` passa a vir do GitHub Packages (AT-770, RN-1040): alias `npm:@viralabs-dev/brabo-docker-port@1.2.0` em `devDependencies` no lugar da dependência git por TAG, `.npmrc` só com o registry do escopo, `packages: read` e `setup-node` com escopo no `ci.yml` e no `build-runner-binaries.yml` (token pelo `GITHUB_TOKEN`), check `contracts-alinhado` do `brabo-ci` (pin `4976af2`). Sai o `scripts/strip-node-modules.mjs` (o `dist` do pacote já é `.js`) e o `--import` do `start` e do `index.spec.ts`. Spec em `src/contratos-por-pacote.spec.ts`: `dependencies` sem `@viralabs-dev/*`.
+
 - Release sem binário faltando (AT-794): a causa do v1.1.0 sem `darwin-arm64` foi o `macos-14` não ser mais suportado pelo GitHub (job cancelado em 1s, sem runner); o alvo passa a `macos-15`. A Release da tag nasce rascunho e o job `checksums` só a publica com os três alvos anexados; faltando algum, o run fica vermelho e a Release segue rascunho até um `workflow_dispatch` com a tag. Teste em `src/release-completo.spec.ts`.
 
 - Check `refs` no PR (AT-782): o `refs.yml` chama o `refs-com-simbolo` do `brabo-ci` (pin `64a1e15`) e reprova a ref `caminho:N` (`símbolo`) de RN que o PR quebra; o artefato `refs-patch` traz a reancoragem. Não é check obrigatório.

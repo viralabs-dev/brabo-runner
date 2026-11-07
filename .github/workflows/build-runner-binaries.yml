@@ -41,6 +41,7 @@ on:
 
 permissions:
   contents: write # gh release upload
+  packages: read # instala @viralabs-dev/* do GitHub Packages (RN-1039)
 
 env:
   NODE_VERSION: '26.10.0'
@@ -205,6 +206,8 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1  # v7.1.0
         with:
           node-version: ${{ env.NODE_VERSION }}
+          registry-url: https://npm.pkg.github.com
+          scope: '@viralabs-dev'
 
       # `pnpm install` — mesmo que sem publicar no npm, é ELE quem roda o
       # `install` do `node-pty` (`node scripts/prebuild.js || node-gyp
@@ -215,6 +218,8 @@ jobs:
       # artefato final sendo compilado pelo Bun.
       - name: pnpm install
         run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build do binário (${{ matrix.target }})
         run: pnpm build:bin

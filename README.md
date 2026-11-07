@@ -27,7 +27,7 @@ e a documentação central está no [brabo](https://github.com/viralabs-dev/brab
 e em https://viralabs-dev.github.io/brabo/prd/.
 
 - **Depende de:** [brabo-contracts](https://github.com/viralabs-dev/brabo-contracts)
-  (o `@brabo/docker-port`, fixado em `#v1.0.0` no `package.json`) e
+  (o `@brabo/docker-port`, instalado do GitHub Packages na versão `1.2.0`, pelo alias `npm:@viralabs-dev/brabo-docker-port@1.2.0`) e
   [brabo-ci](https://github.com/viralabs-dev/brabo-ci) (política de PR e release
   por tag).
 - **É usado por:** [brabo](https://github.com/viralabs-dev/brabo) (o
@@ -311,6 +311,7 @@ Exige Node.js 22.6 ou mais novo e pnpm (versão em `packageManager`). Branches
 permanentes `dev` e `main`; tag só por workflow.
 
 ```sh
+# precisa de ~/.npmrc com //npm.pkg.github.com/:_authToken=<PAT classic read:packages>
 pnpm install
 pnpm start -- --project <projectId> --dir <caminho-absoluto> --token brb_...
 pnpm lint        # oxlint --deny-warnings em src/ e scripts/

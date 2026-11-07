@@ -6,7 +6,7 @@ CLI `brabo-runner` que roda na máquina do usuário (ADR 0103). Terminal por PTY
 
 ## Stack (decidida — não proponha alternativas)
 - `brabo-runner`: CLI Node/TS na máquina do usuário (ADR 0103), distribuído só como binário standalone na Release (AT-774).
-- Contratos: `@brabo/docker-port` vem do `brabo-contracts` por TAG, como fonte TypeScript; o runner usa `module.registerHooks` para rodar sem bundler.
+- Contratos: `@brabo/docker-port` vem do GitHub Packages (`npm:@viralabs-dev/brabo-docker-port@1.2.0`, alias do pnpm, devDependency; ADR 0270), publicado pela tag do `brabo-contracts`. O `dist` já é `.js`, então não há hook de type stripping. O `.npmrc` do repo só aponta o registry do escopo `@viralabs-dev`; o token vive no `~/.npmrc` (PAT `read:packages`) ou no CI (`GITHUB_TOKEN` com `packages: read`), nunca no repo. O pacote do runner não declara `@viralabs-dev/*` em `dependencies` (RN-1040). Subir a versão: `scripts/ci/subir-contracts.sh` do `brabo-ci`; o check `contracts-alinhado` confere alias e lock.
 
 ## Repositório, branches e PR (vale para todo repo `brabo-*`)
 - Branches permanentes: dev, main — um branch, um ambiente; a esteira é
