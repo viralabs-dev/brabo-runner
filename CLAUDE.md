@@ -5,7 +5,7 @@ CLI `brabo-runner` que roda na máquina do usuário (ADR 0103). Terminal por PTY
 > Partido do `CLAUDE.md` do monorepo `daneiel/brabo` (hoje `brabo-legacy`, `dev` @ `1586158973`) na AT-708 (EP-033, ADR 0252). Copiado, não resumido: o que era de outro repo foi cortado e os caminhos do monorepo viraram a raiz deste repo (ou `brabo-<x>:caminho`). Caminhos sem prefixo que não existem aqui (`docker/`, `deploy/`, `install.sh`, `e2e/`, `scripts/dev/`, `scripts/ci/` fora do `brabo-ci`) moram no `brabo-infra`, no `brabo-qa` ou no `brabo-ci`. O resto das regras mora no `CLAUDE.md` da pasta-mãe (`brabo-workspace`, clonado em `~/dev/brabo/CLAUDE.md`) e no de cada repo irmão.
 
 ## Stack (decidida — não proponha alternativas)
-- `brabo-runner`: CLI Node/TS na máquina do usuário (ADR 0103), distribuído como binário standalone e por `npm install -g @brabo/runner`.
+- `brabo-runner`: CLI Node/TS na máquina do usuário (ADR 0103), distribuído só como binário standalone na Release (AT-774).
 - Contratos: `@brabo/docker-port` vem do `brabo-contracts` por TAG, como fonte TypeScript; o runner usa `module.registerHooks` para rodar sem bundler.
 
 ## Repositório, branches e PR (vale para todo repo `brabo-*`)
@@ -119,10 +119,9 @@ CLI `brabo-runner` que roda na máquina do usuário (ADR 0103). Terminal por PTY
   numa direção só e NUNCA apaga — arquivo apagado na origem permanece no
   destino —, com guarda IRMÃ de `guard.ts` (mesma dupla passada, mesma
   ressalva de TOCTOU), e é disparado por MOMENTO NOMEADO do engine
-  (`mirror_sync`, hoje o commit), nunca por watcher. TRÊS caminhos de
+  (`mirror_sync`, hoje o commit), nunca por watcher. DOIS caminhos de
   distribuição: clonar o
-  monorepo (dev), `npm install -g @brabo/runner` via `tsup` + `npm publish`
-  (ADR 0106), e binário standalone via `bun` (`bun build --compile`, ADR
+  repo (dev) e binário standalone via `bun` (`bun build --compile`, ADR
   0112) — o `.node` nativo do `node-pty` embutido por `with { type: 'file'
   }` e extraído para um diretório real em runtime, já que `node-pty`
   resolve seu próprio addon por um `require()` de caminho COMPUTADO que o
@@ -364,7 +363,7 @@ CLI `brabo-runner` que roda na máquina do usuário (ADR 0103). Terminal por PTY
   AT-114 o runner acrescenta esse bit sozinho ao carregar o `node-pty` sob Node
   (`src/spawn-helper.ts`, só darwin, erro nomeado se falta ou o
   `chmod` é recusado), provado por teste e NUNCA num macOS real. Mac Intel e
-  Windows usam `npm install -g @brabo/runner`: o proxy recusa os dois com 400
+  Windows não têm instalação (o npm saiu na AT-774): o proxy recusa os dois com 400
   próprio (`SEM_BINARIO_POR_DECISAO`, nome e ADR por plataforma), o `install.sh`
   diz isso sem baixar no Mac Intel e, no Windows, na recusa que ele já fazia da
   instalação inteira (ADR 0150). Os TRÊS lugares que enumeram alvos (matriz,
@@ -372,7 +371,6 @@ CLI `brabo-runner` que roda na máquina do usuário (ADR 0103). Terminal por PTY
   fluxo do navegador, ADR 0203) são amarrados por
   `scripts/ci/alvos-do-runner.spec.ts` — religar o Mac Intel ou o Windows é ADR
   novo, depois de o Bun corrigir, nunca só devolver as linhas da matriz
-- `NPM_TOKEN` não configurado — `publish-runner.yml` avisa e pula
 
 ## O que NÃO fazer
 - Não instalar libs sem justificar no plano. Não refatorar código de fase concluída sem pedido explícito.
