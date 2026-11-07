@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Check `refs` no PR (AT-782): o `refs.yml` chama o `refs-com-simbolo` do `brabo-ci` (pin `64a1e15`) e reprova a ref `caminho:N` (`símbolo`) de RN que o PR quebra; o artefato `refs-patch` traz a reancoragem. Não é check obrigatório.
+
 - Regressivo por funcionalidade (AT-769, B6): a regra do card entra no CLAUDE.md e o `analista.md` ganha o item do catálogo (`brabo-qa/funcionalidades.yml`). Este repo não tem gatilho do `brabo-qa` ainda: a PR do runner recebe `neutral` até existir a spec de `runner`.
 - Vínculos nos runs (AT-773, B5): o `build-runner-binaries.yml` ganha `run-name` (`binários do runner {tag} ← tag do carimbo` na tag; `(ensaio)` no dispatch). O `publish-runner.yml` saiu antes (AT-774), então não há o `publish` do runner para ligar.
 
