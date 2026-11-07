@@ -77,7 +77,10 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             echo "::notice::a Release de $TAG já existe."
           else
-            gh release create "$TAG" --verify-tag --title "$TAG" --generate-notes
+            # RASCUNHO (AT-794): só o job `checksums` publica, e só com todos os
+            # alvos anexados. Release pública sem binário de uma plataforma é
+            # o que a v1.1.0 foi (macos-14 sem runner, job cancelado).
+            gh release create "$TAG" --draft --verify-tag --title "$TAG" --generate-notes
           fi
 
   build:
@@ -109,8 +112,10 @@ jobs:
           # sob Node, então o Mac Intel fica sem binário
           # e o `install.sh` diz isso em vez de baixar. Religar o alvo é ADR
           # novo, depois de o Bun corrigir — não é trocar o label.
+          # AT-794: `macos-14` deixou de existir ("The configuration
+          # 'macos-14-arm64-us-default' is not supported", run 42387531755).
           - target: darwin-arm64
-            os: macos-14
+            os: macos-15
           # `win32-x64` SAIU da matriz por decisão (ADR 0187, AT-343). Os
           # ensaios por `workflow_dispatch` (runs 36775746724, 36779817686,
           # 36780804339, 36781729045) levaram o binário até carregar o
@@ -534,4 +539,15 @@ jobs:
           # arquivo não muda.
           gh release upload "$TAG" checksums.txt checksums.txt.bundle THIRD_PARTY_NOTICES.md --clobber
           echo "anexados: checksums.txt, checksums.txt.bundle e THIRD_PARTY_NOTICES.md -> $TAG"
+
+          # AT-794: a Release nasce rascunho e só vira pública aqui, com TODOS
+          # os alvos. O manifesto parcial acima continua anexado (honesto),
+          # mas o run fica vermelho e a Release segue rascunho até um
+          # `workflow_dispatch` com a mesma tag completar a matriz.
+          if [ -n "${faltando# }" ]; then
+            echo "::error::$TAG NÃO foi publicada: faltam os binários:${faltando}. Reexecute por workflow_dispatch com a tag."
+            exit 1
+          fi
+          gh release edit "$TAG" --draft=false
+          echo "publicada: $TAG"
 
