@@ -350,6 +350,10 @@ As decisões de arquitetura do runner local estão nos ADRs do `brabo`:
 [0112](https://github.com/viralabs-dev/brabo/blob/main/docs/adr/0112-binario-standalone-do-runner-via-bun-build-compile.md)
 (binário standalone).
 
+## Apoie
+
+Se o projeto te ajuda, você pode [pagar um café no Ko-fi](https://ko-fi.com/daneiel).
+
 ## Licença
 
 MIT. Os avisos de software de terceiros, com a oferta escrita para as
