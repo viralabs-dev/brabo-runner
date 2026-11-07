@@ -338,6 +338,7 @@ CLI `brabo-runner` que roda na máquina do usuário (ADR 0103). Terminal por PTY
 
 ## Estado, decisões abertas e lacunas que são DESTE repo
 - `guard.ts` do runner é best-effort por invariante, não lacuna
+- Release do runner (AT-794): a Release da tag nasce RASCUNHO e o job `checksums` a publica só com os três alvos anexados; faltando algum o run fica vermelho e a Release segue rascunho (completar = `workflow_dispatch` com a tag). O `macos-14` deixou de ser suportado pelo GitHub (v1.1.0 saiu sem `darwin-arm64`); o alvo usa `macos-15`. Teste: `src/release-completo.spec.ts`.
 - Binário standalone: TRÊS alvos na matriz desde o ADR 0187, os três PROVADOS
   em ensaio, e DOIS chegando à Release. `v4.0.1` e `v5.0.0` anexam
   `brabo-runner-linux-x64` e `-linux-arm64` (medido com `gh release view`) — a
