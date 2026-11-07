@@ -1,5 +1,7 @@
 name: Build runner binaries
 
+run-name: ${{ github.event_name == 'push' && format('binários do runner {0} ← tag do carimbo', github.ref_name) || format('binários do runner (ensaio) · {0} · {1}', github.ref_name, github.actor) }}
+
 # ADR 0112 — o item de backlog do ADR 0104 ("binário standalone (pkg/bun
 # build --compile)"), até agora fora de escopo. Workflow PRÓPRIO, disparado
 # pela MESMA tag final de `release.yml`/`publish-runner.yml` — mesma

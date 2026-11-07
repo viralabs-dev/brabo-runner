@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Regressivo por funcionalidade (AT-769, B6): a regra do card entra no CLAUDE.md e o `analista.md` ganha o item do catálogo (`brabo-qa/funcionalidades.yml`). Este repo não tem gatilho do `brabo-qa` ainda: a PR do runner recebe `neutral` até existir a spec de `runner`.
+- Vínculos nos runs (AT-773, B5): o `build-runner-binaries.yml` ganha `run-name` (`binários do runner {tag} ← tag do carimbo` na tag; `(ensaio)` no dispatch). O `publish-runner.yml` saiu antes (AT-774), então não há o `publish` do runner para ligar.
+
 - CI: repina os reutilizáveis do `brabo-ci` em `13f3697` (merge da ci#17, que inclui a ci#16): `ubuntu-26.04`, `client-id` no lugar de `app-id`, rótulo de família criado antes de aplicar, linha `Carimbo:` na tag e helper `vinculos` (AT-772, AT-773).
 - O runner passa a sair só como binário da Release: o `publish-runner.yml` (publicação no npmjs) foi removido e `npm install -g @brabo/runner` sai do README, do CLAUDE.md e dos avisos de terceiros; não há plano B por npm (AT-774).
 
