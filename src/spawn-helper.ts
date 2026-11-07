@@ -1,7 +1,6 @@
 /**
  * AT-114 — o `spawn-helper` do `node-pty` chega SEM bit de execução no macOS
- * quando o runner roda sob NODE (pelo fonte, `pnpm install`; ou pelo pacote,
- * `npm install -g @brabo/runner`).
+ * quando o runner roda sob NODE (pelo fonte, `pnpm install`; ou pelo pacote).
  *
  * O que foi medido: o tarball do `node-pty@1.1.0` traz
  * `prebuilds/darwin-{x64,arm64}/spawn-helper` com modo `0644`, e nem o
@@ -91,7 +90,7 @@ export function garantirSpawnHelperExecutavel(opcoes: OpcoesDoSpawnHelper): Desf
     throw new Error(
       `spawn-helper: nenhum pty.node do node-pty para ${plataforma}-${arch} — procurado em ` +
         `${pastas.join(', ')}. A instalação do node-pty está incompleta: reinstale ` +
-        '(`pnpm install` no monorepo, ou `npm install -g @brabo/runner`).',
+        '(`pnpm install` no repo, ou baixe de novo o binário da Release).',
     );
   }
 
@@ -100,7 +99,7 @@ export function garantirSpawnHelperExecutavel(opcoes: OpcoesDoSpawnHelper): Desf
     throw new Error(
       `spawn-helper: ${caminho} não existe, ao lado do pty.node que o node-pty carrega. ` +
         'Sem ele nenhum terminal abre (`posix_spawnp failed`). Reinstale o node-pty ' +
-        '(`pnpm install` no monorepo, ou `npm install -g @brabo/runner`).',
+        '(`pnpm install` no repo, ou baixe de novo o binário da Release).',
     );
   }
 

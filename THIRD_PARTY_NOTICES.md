@@ -1,9 +1,8 @@
 # Avisos de terceiros do brabo-runner
 
 O brabo-runner é [MIT](LICENSE). Este documento cobre o software de terceiros
-que **viaja junto** com ele, em duas formas de distribuição: o **binário
-standalone** (anexado à Release, com o runtime Bun dentro) e o **pacote npm**
-`@brabo/runner` (que não leva runtime nenhum: usa o Node de quem instala).
+que **viaja junto** com ele, na única forma de distribuição: o **binário
+standalone** (anexado à Release, com o runtime Bun dentro).
 
 Levantado em **2026-11-05**, contra o `pnpm-lock.yaml` e o `BUN_VERSION` do
 `build-runner-binaries.yml`.
@@ -43,26 +42,19 @@ Este arquivo é anexado à Release ao lado dos binários e coberto pelo mesmo
 > jurídico, e a validação de que a oferta escrita basta para a LGPL ligada
 > estaticamente segue sendo do mantenedor.
 
-## 2. Pacotes embutidos no binário e no pacote npm
+## 2. Pacotes embutidos no binário
 
-Todos MIT. O texto da licença está na seção 4.
+Todos MIT. O texto da licença está na seção 3.
 
-| pacote | versão | copyright | no binário | no pacote npm |
-|---|---|---|---|---|
-| jose | 6.2.4 | Filip Skokan (2018) | sim | dependência (`dependencies`) |
-| node-pty | 1.1.0 | Christopher Jeffrey (2012-2015) e colaboradores | sim (binding nativo) | dependência (`dependencies`) |
-| node-addon-api | 7.1.1 | Node.js API collaborators (2017) | sim (transitiva do node-pty) | instalada com o node-pty |
-| phoenix | 1.8.9 | Chris McCord (2014) | sim (carregado por `import()`) | embutido no `dist` |
-| @brabo/docker-port | 0.0.1 (`brabo-contracts` v1.0.0) | Daniel Souza (2026), MIT do próprio Brabo | sim | embutido no `dist` |
+| pacote | versão | copyright | no binário |
+|---|---|---|---|
+| jose | 6.2.4 | Filip Skokan (2018) | sim |
+| node-pty | 1.1.0 | Christopher Jeffrey (2012-2015) e colaboradores | sim (binding nativo) |
+| node-addon-api | 7.1.1 | Node.js API collaborators (2017) | sim (transitiva do node-pty) |
+| phoenix | 1.8.9 | Chris McCord (2014) | sim (carregado por `import()`) |
+| @brabo/docker-port | 0.0.1 (`brabo-contracts` v1.0.0) | Daniel Souza (2026), MIT do próprio Brabo | sim |
 
-## 3. O pacote npm
-
-O `@brabo/runner` publicado no npm leva `dist/` e este arquivo. As dependências
-`jose` e `node-pty` (e a `node-addon-api`, transitiva) são resolvidas por quem
-instala, e `phoenix` e `@brabo/docker-port` já vão dentro do `dist`. Sem
-runtime embutido, a seção 1 não se aplica ao pacote npm.
-
-## 4. Texto da licença MIT
+## 3. Texto da licença MIT
 
 Vale para cada pacote da seção 2, com o copyright da tabela.
 

@@ -1,4 +1,4 @@
-# `@brabo/runner`
+# `brabo-runner`
 
 CLI que roda **na máquina do próprio usuário** e se conecta ao engine do Brabo
 por um canal Phoenix autenticado com ticket de uso único (ADR 0102/0103). Serve
@@ -71,15 +71,9 @@ ADR 0203. Uma pasta configurada assim **continua funcionando**: a CLI ainda lê 
 config e a chave da pasta de onde é executada, e uma flag explícita sempre vence
 o arquivo local.
 
-### Pelo npm (exige Node.js >= 22.6)
-
-```sh
-npm install -g @brabo/runner
-```
-
-O pacote é publicado no npm pelo `publish-runner.yml` a cada tag.
-
 ### Binário standalone (sem Node nem npm)
+
+O runner é distribuído só como binário da Release (AT-774); não há pacote no npm.
 
 Baixe o executável da sua plataforma na
 [Release do brabo-runner](https://github.com/viralabs-dev/brabo-runner/releases):
@@ -97,10 +91,10 @@ chmod +x ./brabo-runner-<plataforma>
 
 - **macOS Intel não tem binário, por decisão** (ADR 0174): no `macos-15-intel`
   o binário compila mas reprova o `--self-test-pty`, por um bug do Bun com o
-  `node-pty` (oven-sh/bun#25822). A mesma prova passa no Node, então ali o
-  caminho é `npm install -g @brabo/runner`, e é isso que o `install.sh` diz.
+  `node-pty` (oven-sh/bun#25822). A mesma prova passa no Node, então ali não
+  há instalação, e o `install.sh` diz isso e aponta onde pedir.
 - **Windows não tem binário, por decisão** (ADR 0187): sob Bun o pipe de saída
-  do ConPTY termina depois do primeiro pedaço. No Windows o caminho é o npm; o
+  do ConPTY termina depois do primeiro pedaço. O
   `install.sh` já recusa Windows (ADR 0150).
 
 O binário é um arquivo só, com o addon nativo `node-pty` embutido (ADR 0112) e

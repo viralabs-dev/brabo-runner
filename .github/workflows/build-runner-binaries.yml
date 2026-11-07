@@ -104,7 +104,7 @@ jobs:
           # substituto `macos-15-intel` agenda e constrói mas reprova no
           # `--self-test-pty` — sob o Bun o `onData` do node-pty nunca entrega
           # a saída do filho (oven-sh/bun#25822, aberto). A MESMA prova passa
-          # sob Node, então o Mac Intel fica com `npm install -g @brabo/runner`
+          # sob Node, então o Mac Intel fica sem binário
           # e o `install.sh` diz isso em vez de baixar. Religar o alvo é ADR
           # novo, depois de o Bun corrigir — não é trocar o label.
           - target: darwin-arm64
@@ -116,7 +116,7 @@ jobs:
           # Bun o `net.Socket` do pipe nomeado de saída dá `end,close` depois
           # do primeiro pedaço, o node-pty fecha o pseudoconsole e o filho
           # morre com 0xC000013A. Sob Node o mesmo node-pty é o do VS Code, e o
-          # Windows fica com `npm install -g @brabo/runner`. Religar é ADR
+          # Windows fica sem binário. Religar é ADR
           # novo, com prova em ensaio — não é devolver estas duas linhas.
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
