@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Ko-fi do mantenedor: `.github/FUNDING.yml` (botão Sponsor) e seção Apoie no README (AT-768).
+
 - `README.md` reescrito em pt-BR, atual e enxuto (AT-766): links para `viralabs-dev/brabo` e `viralabs-dev/brabo-runner`, instalador e binários nas Releases certas, desenvolvimento pelos scripts deste repo (sem `pnpm --filter`) e a seção "Repositórios do Brabo".
 - `docs/business-rules/runner.md` volta a ser em pt-BR, sem `idioma_original` (decisão do dono de 06/11/2026, que reverte o ADR 0260); as âncoras `{#rn-NNN}` não mudam. A passagem para o inglês da AT-745 (README e `docs/`) fica revertida.
 - `politica.yml`: pins do `brabo-ci` sobem para `b030fbf` (dispensa da PR do bot, ADR 0255; AT-733).
