@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- CI: o check `Dependências de merge` (AT-787) entra pelo `dependencias.yml`, que chama o reutilizável `dependencias-de-merge.yml` do `brabo-ci` pinado em `c6d9394` (`v1.4.0-dev.10`). A PR declara `Depende-de: viralabs-dev/<repo>#<n>` no corpo e o check fica amarelo (`esperando …`) até cada PR citada estar mergeada. Sem linha `Depende-de` o check fica verde ("Sem dependências declaradas"). Não é exigido por ruleset ainda.
+
 - CI: o `ci.yml` chama o reutilizável `cadeia.yml` do `brabo-ci` (actionlint e pins, `ci_ref` obrigatório, AT-819) e repina todos os `uses:` e `ci_ref` em `0a9eba8` (`v1.4.0-dev.5`, brabo-ci#39). Como o `cadeia` não repete os `-ignore` locais, o `build-runner-binaries.yml` agrupa as redireções para `$GITHUB_OUTPUT` (SC2129) e ganha `shellcheck disable=SC2012` justificado no `ls` do binário.
 
 - O `@brabo/docker-port` passa a vir do GitHub Packages (AT-770, RN-1040): alias `npm:@viralabs-dev/brabo-docker-port@1.2.0` em `devDependencies` no lugar da dependência git por TAG, `.npmrc` só com o registry do escopo, `packages: read` e `setup-node` com escopo no `ci.yml` e no `build-runner-binaries.yml` (token pelo `GITHUB_TOKEN`), check `contracts-alinhado` do `brabo-ci` (pin `4976af2`). Sai o `scripts/strip-node-modules.mjs` (o `dist` do pacote já é `.js`) e o `--import` do `start` e do `index.spec.ts`. Spec em `src/contratos-por-pacote.spec.ts`: `dependencies` sem `@viralabs-dev/*`.
