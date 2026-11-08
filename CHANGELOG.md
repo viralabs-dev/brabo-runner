@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Docs (AT-826): o `README.md` segue o esqueleto de 8 seções do `brabo-ci` (`README.modelo.md`), com o bloco do mapa dos repos e até 150 linhas. O manual completo (instalação, flags, agente de máquina, chave de dispositivo, serviço, reconexão, macOS e segurança) desce, sem corte, para `docs/how-to/usar-o-runner.md`. O `ci.yml` ganha os checks informativos `readme-esqueleto` e `mapa-alinhado`, e todos os `uses:` e `ci_ref` do `brabo-ci` sobem para `54dc896` (`v1.4.0-dev.13`).
+- Docs (AT-826): o `README.md` segue o esqueleto de 8 seções do `brabo-ci` (`README.modelo.md`), com o bloco do mapa dos repos e até 150 linhas. O manual completo (instalação, flags, agente de máquina, chave de dispositivo, serviço, reconexão, macOS e segurança) desce, sem corte, para `docs/how-to/usar-o-runner.md`. O `ci.yml` ganha os checks informativos `readme-esqueleto` e `mapa-alinhado`, e todos os `uses:` e `ci_ref` do `brabo-ci` sobem para `b5df60b` (`v1.4.0-dev.14`).
 
 - CI: o check `Dependências de merge` (AT-787) entra pelo `dependencias.yml`, que chama o reutilizável `dependencias-de-merge.yml` do `brabo-ci` pinado em `c6d9394` (`v1.4.0-dev.10`). A PR declara `Depende-de: viralabs-dev/<repo>#<n>` no corpo e o check fica amarelo (`esperando …`) até cada PR citada estar mergeada. Sem linha `Depende-de` o check fica verde ("Sem dependências declaradas"). Não é exigido por ruleset ainda.
 

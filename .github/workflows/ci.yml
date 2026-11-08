@@ -13,22 +13,22 @@ jobs:
   # Actionlint e pins do brabo-ci (AT-819). Não é check obrigatório.
   cadeia:
     name: Cadeia (actionlint e pins)
-    uses: viralabs-dev/brabo-ci/.github/workflows/cadeia.yml@54dc896bbcd3cb5cbb6f0717825031f24152b8f0  # v1.4.0-dev.13
+    uses: viralabs-dev/brabo-ci/.github/workflows/cadeia.yml@b5df60b6e114827dd3a59889d6a4b0ecda730ecc  # v1.4.0-dev.14
     with:
-      ci_ref: 54dc896bbcd3cb5cbb6f0717825031f24152b8f0  # v1.4.0-dev.13
+      ci_ref: b5df60b6e114827dd3a59889d6a4b0ecda730ecc  # v1.4.0-dev.14
 
   # README no esqueleto e mapa alinhado (AT-826). Informativos, não são checks obrigatórios.
   readme-esqueleto:
     name: README no esqueleto
-    uses: viralabs-dev/brabo-ci/.github/workflows/readme-esqueleto.yml@54dc896bbcd3cb5cbb6f0717825031f24152b8f0  # v1.4.0-dev.13
+    uses: viralabs-dev/brabo-ci/.github/workflows/readme-esqueleto.yml@b5df60b6e114827dd3a59889d6a4b0ecda730ecc  # v1.4.0-dev.14
     with:
-      ci_ref: 54dc896bbcd3cb5cbb6f0717825031f24152b8f0  # v1.4.0-dev.13
+      ci_ref: b5df60b6e114827dd3a59889d6a4b0ecda730ecc  # v1.4.0-dev.14
 
   mapa-alinhado:
     name: Mapa dos repos alinhado
-    uses: viralabs-dev/brabo-ci/.github/workflows/mapa-alinhado.yml@54dc896bbcd3cb5cbb6f0717825031f24152b8f0  # v1.4.0-dev.13
+    uses: viralabs-dev/brabo-ci/.github/workflows/mapa-alinhado.yml@b5df60b6e114827dd3a59889d6a4b0ecda730ecc  # v1.4.0-dev.14
     with:
-      ci_ref: 54dc896bbcd3cb5cbb6f0717825031f24152b8f0  # v1.4.0-dev.13
+      ci_ref: b5df60b6e114827dd3a59889d6a4b0ecda730ecc  # v1.4.0-dev.14
 
   runner:
     name: Lint, tipos, testes, build e smoke
