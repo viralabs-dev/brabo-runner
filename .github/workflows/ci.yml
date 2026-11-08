@@ -10,6 +10,13 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  # Actionlint e pins do brabo-ci (AT-819). Não é check obrigatório.
+  cadeia:
+    name: Cadeia (actionlint e pins)
+    uses: viralabs-dev/brabo-ci/.github/workflows/cadeia.yml@0a9eba831fb82b9a20a5ad03bc2273a3ede69796  # v1.4.0-dev.5
+    with:
+      ci_ref: 0a9eba831fb82b9a20a5ad03bc2273a3ede69796  # v1.4.0-dev.5
+
   runner:
     name: Lint, tipos, testes, build e smoke
     runs-on: ubuntu-26.04
