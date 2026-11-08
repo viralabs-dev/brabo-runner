@@ -169,9 +169,11 @@ jobs:
             # anexa nada. Sem isto, a única forma de exercitar as três
             # plataformas era cortar uma tag — e uma falha de plataforma só
             # aparecia com a Release já publicada.
-            echo 'ensaio=true' >> "$GITHUB_OUTPUT"
-            echo "ref=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
-            echo "tag=" >> "$GITHUB_OUTPUT"
+            {
+              echo 'ensaio=true'
+              echo "ref=${GITHUB_REF_NAME}"
+              echo "tag="
+            } >> "$GITHUB_OUTPUT"
             echo "ENSAIO a partir de ${GITHUB_REF_NAME} — nada será anexado."
             exit 0
           fi
@@ -184,9 +186,11 @@ jobs:
             echo "::error::'$tag' não é tag final. O formato é vX.Y.Z, sem sufixo -dev.N nem -qa.N."
             exit 1
           fi
-          echo 'ensaio=false' >> "$GITHUB_OUTPUT"
-          echo "ref=$tag" >> "$GITHUB_OUTPUT"
-          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          {
+            echo 'ensaio=false'
+            echo "ref=$tag"
+            echo "tag=$tag"
+          } >> "$GITHUB_OUTPUT"
           echo "tag a construir: $tag"
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
@@ -252,6 +256,7 @@ jobs:
         run: |
           set -euo pipefail
 
+          # shellcheck disable=SC2012  # o nome é brabo-runner-<alvo>, gerado pelo build, sem caractere estranho
           arquivo="$(ls dist-bin/brabo-runner-* 2>/dev/null | head -1)"
           if [ -z "$arquivo" ]; then
             echo "::error::nenhum binário encontrado em dist-bin/ — o build falhou silenciosamente?"
@@ -378,9 +383,11 @@ jobs:
           if [ "${GITHUB_EVENT_NAME}" = 'workflow_dispatch' ] && [ -z "$ENTRADA" ]; then
             # ENSAIO (ver o job `build`): não há manifesto a assinar nem
             # Release a que anexar. O job inteiro é pulado logo abaixo.
-            echo 'ensaio=true' >> "$GITHUB_OUTPUT"
-            echo "ref=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
-            echo "tag=" >> "$GITHUB_OUTPUT"
+            {
+              echo 'ensaio=true'
+              echo "ref=${GITHUB_REF_NAME}"
+              echo "tag="
+            } >> "$GITHUB_OUTPUT"
             exit 0
           fi
           if [ "${GITHUB_EVENT_NAME}" = 'workflow_dispatch' ]; then
@@ -388,9 +395,11 @@ jobs:
           else
             tag="${GITHUB_REF_NAME}"
           fi
-          echo 'ensaio=false' >> "$GITHUB_OUTPUT"
-          echo "ref=$tag" >> "$GITHUB_OUTPUT"
-          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          {
+            echo 'ensaio=false'
+            echo "ref=$tag"
+            echo "tag=$tag"
+          } >> "$GITHUB_OUTPUT"
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:

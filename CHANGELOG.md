@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- CI: o `ci.yml` chama o reutilizável `cadeia.yml` do `brabo-ci` (actionlint e pins, `ci_ref` obrigatório, AT-819) e repina todos os `uses:` e `ci_ref` em `0a9eba8` (`v1.4.0-dev.5`, brabo-ci#39). Como o `cadeia` não repete os `-ignore` locais, o `build-runner-binaries.yml` agrupa as redireções para `$GITHUB_OUTPUT` (SC2129) e ganha `shellcheck disable=SC2012` justificado no `ls` do binário.
+
 - O `@brabo/docker-port` passa a vir do GitHub Packages (AT-770, RN-1040): alias `npm:@viralabs-dev/brabo-docker-port@1.2.0` em `devDependencies` no lugar da dependência git por TAG, `.npmrc` só com o registry do escopo, `packages: read` e `setup-node` com escopo no `ci.yml` e no `build-runner-binaries.yml` (token pelo `GITHUB_TOKEN`), check `contracts-alinhado` do `brabo-ci` (pin `4976af2`). Sai o `scripts/strip-node-modules.mjs` (o `dist` do pacote já é `.js`) e o `--import` do `start` e do `index.spec.ts`. Spec em `src/contratos-por-pacote.spec.ts`: `dependencies` sem `@viralabs-dev/*`.
 
 - Release sem binário faltando (AT-794): a causa do v1.1.0 sem `darwin-arm64` foi o `macos-14` não ser mais suportado pelo GitHub (job cancelado em 1s, sem runner); o alvo passa a `macos-15`. A Release da tag nasce rascunho e o job `checksums` só a publica com os três alvos anexados; faltando algum, o run fica vermelho e a Release segue rascunho até um `workflow_dispatch` com a tag. Teste em `src/release-completo.spec.ts`.
