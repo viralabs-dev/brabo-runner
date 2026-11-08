@@ -1,5 +1,13 @@
 # brabo-runner
 
+[![CI dev](https://img.shields.io/github/actions/workflow/status/viralabs-dev/brabo-runner/ci.yml?branch=dev&label=CI%20dev&style=flat-square)](https://github.com/viralabs-dev/brabo-runner/actions/workflows/ci.yml?query=branch%3Adev)
+[![CI main](https://img.shields.io/github/actions/workflow/status/viralabs-dev/brabo-runner/ci.yml?branch=main&label=CI%20main&style=flat-square)](https://github.com/viralabs-dev/brabo-runner/actions/workflows/ci.yml?query=branch%3Amain)
+[![dev](https://img.shields.io/github/v/tag/viralabs-dev/brabo-runner?include_prereleases&filter=*-dev*&label=dev&color=informational&style=flat-square)](https://github.com/viralabs-dev/brabo-runner/tags)
+[![main](https://img.shields.io/github/v/release/viralabs-dev/brabo-runner?label=main&color=informational&style=flat-square)](https://github.com/viralabs-dev/brabo-runner/releases/latest)
+[![Licença: MIT](https://img.shields.io/badge/licença-MIT-blue.svg?style=flat-square)](LICENSE)
+[![Documentação](https://img.shields.io/badge/docs-viralabs--dev.github.io/brabo-8A2BE2.svg?style=flat-square)](https://viralabs-dev.github.io/brabo/prd/)
+[![Apoie no Ko-fi](https://img.shields.io/badge/Ko--fi-me%20pague%20um%20caf%C3%A9-FF5E5B?logo=ko-fi&logoColor=white&style=flat-square)](https://ko-fi.com/daneiel)
+
 CLI que roda na sua máquina e deixa o Brabo executar comandos, abrir terminais e subir containers sobre a pasta do seu código, sem que ela saia daí.
 
 ## Para que existe
