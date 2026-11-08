@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Doc (AT-848): o bloco "Onde se encaixa" do README é regenerado do `repos.yml` do brabo com o formato `{arquivo, trecho}` e a aresta `brabo → brabo-contracts` (brabo#84); o check `mapa-alinhado` volta a passar.
 - CI (AT-848): todos os `uses:` e `ci_ref` repinam em `6390ef5` (`v1.4.0-dev.17`, brabo-ci#53), que aceita a prova `{arquivo, trecho}` do `mapa-dos-repos.ts`.
 - Docs (AT-826): o `README.md` segue o esqueleto de 8 seções do `brabo-ci` (`README.modelo.md`), com o bloco do mapa dos repos e até 150 linhas. O manual completo (instalação, flags, agente de máquina, chave de dispositivo, serviço, reconexão, macOS e segurança) desce, sem corte, para `docs/how-to/usar-o-runner.md`. O `ci.yml` ganha os checks informativos `readme-esqueleto` e `mapa-alinhado`, e todos os `uses:` e `ci_ref` do `brabo-ci` sobem para `b5df60b` (`v1.4.0-dev.14`).
 
