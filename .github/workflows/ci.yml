@@ -38,6 +38,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false
+      # Bun só para o build:bin/smoke:bin (AT-853); mesma versão e SHA do build-runner-binaries.yml.
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6  # v2
+        with:
+          bun-version: '1.4.0'
       - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413  # v6.1.0
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1  # v7.1.0
         with:
@@ -55,3 +59,6 @@ jobs:
       - run: pnpm build
       # Exercita o artefato empacotado (dist/index.cjs) que vai para o registry.
       - run: pnpm smoke
+      # Binário linux-x64 que vai para a Release, com --self-test-pty (PTY real, RN-688) (AT-853).
+      - run: pnpm build:bin
+      - run: pnpm smoke:bin
