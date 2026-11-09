@@ -10,6 +10,8 @@ keywords: [regras de negócio, runner]
 
 ## O agente de máquina espera o primeiro projeto, e a chave nasce no terminal (RN-550/551, FASE 30)
 
+<a id="rn-550"></a>
+
 ### RN-550 — Com ZERO conexões o agente local NÃO sai: ele espera e reconsulta a lista; com conexão viva a consulta continua sendo só no start {#rn-550}
 
 Sessão 8 da [FASE 30](https://github.com/viralabs-dev/brabo/blob/dev/docs/explanation/fase-30-runner-por-maquina.md). A
@@ -113,6 +115,8 @@ eu não consigo atendê-lo"*.
 - **ADR:** [0155](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0155-a-primeira-conta-nasce-no-terminal.md) ponto 5
 - **Origem:** FASE 30, sessão 8 —
   [o recorte da fase](https://github.com/viralabs-dev/brabo/blob/dev/docs/explanation/fase-30-runner-por-maquina.md)
+
+<a id="rn-551"></a>
 
 ### RN-551 — `brabo-runner device-key create`/`finish`: o par Ed25519 nasce NA MÁQUINA, a privada nunca viaja, e o arquivo que o runner lê nunca existe sem `kid` {#rn-551}
 
@@ -227,6 +231,8 @@ devolveria o sintoma silencioso.
 ---
 
 ## A credencial que não atravessa o container do agente local (RN-558)
+
+<a id="rn-558"></a>
 
 ### RN-558 — Credencial no `exec` com container ativo é RECUSADA pelo runner, com desfecho nomeado e origem `politica` {#rn-558}
 
@@ -401,6 +407,8 @@ ele roda no HOST (`criarPastaDoProjeto`), não no container.
 
 ## O git credenciado roda no host do runner (RN-676)
 
+<a id="rn-676"></a>
+
 ### RN-676 — Com container ativo, o `git fetch` credenciado de `RunnerGit` roda no HOST do runner, marcado pelo engine; o código continua no container {#rn-676}
 
 Decisão do dono (01/10), registrada no
@@ -451,6 +459,8 @@ recusa nomeada.
 
 ## A Anamnese religada: sujeito elegível e fato do perfil (RN-680)
 
+<a id="rn-688"></a>
+
 ### RN-688 — O binário do runner lê o PTY com leitor próprio sob o Bun, e o auto-teste prova a SEGUNDA leitura {#rn-688}
 
 Sob o Bun (o binário do `bun build --compile`, [ADR 0112](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0112-binario-standalone-do-runner-via-bun-build-compile.md)),
@@ -496,6 +506,8 @@ ganhar contorno.
 - **Origem:** AT-342, AT-343
 
 ## AT-770 — o brabo-contracts chega por pacote do GitHub Packages
+
+<a id="rn-1040"></a>
 
 ### RN-1040 — O runner publicado não declara `@viralabs-dev/*` em `dependencies` {#rn-1040}
 
