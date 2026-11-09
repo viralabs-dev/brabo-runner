@@ -22,7 +22,7 @@ para `POST /internal/projects/:projectId/workspace-verification`
 
 1. Recusa com `400` se o projeto não estiver no modo `runner`;
 2. Revalida o caminho pelo MESMO predicado léxico da criação
-   ([RN-422](../api.md#rn-422)) — mesmo vindo do runner, raiz de sistema e
+   ([RN-422](https://github.com/viralabs-dev/brabo-api/blob/dev/docs/business-rules/api.md#rn-422)) — mesmo vindo do runner, raiz de sistema e
    sobreposição com o Brabo continuam proibidas;
 3. **SOBRESCREVE** `workspacePath` com o caminho normalizado e grava
    `workspaceVerifiedAt = now()` — sem exigir igualdade com o que foi
@@ -66,7 +66,7 @@ mesma recusa vale na corrida (`Registry` dizia conectado no início de
   `severidade: warn` — quem trava de verdade é a recusa explícita do
   engine, o gate é só o registro/evidência.
 - **Decisão arquitetural:**
-  [ADR 0104](../../adr/0104-execution-mode-tres-valores-e-workspace-verificado-pelo-runner.md)
+  [ADR 0104](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0104-execution-mode-tres-valores-e-workspace-verificado-pelo-runner.md)
 - **Origem:** reconciliação do ADR 0104, decisão confirmada com o dono do
   produto (o runner é a fonte da verdade; sem sessão, o UPDATE acontece
   mesmo assim; comando recusado explicitamente sem verificação/conexão)
@@ -107,8 +107,8 @@ de texto livre continua sendo o caminho manual, como antes.
   (ordenação, pasta vazia/inexistente/arquivo, permissão por entrada);
   `FolderBrowserModal.test.tsx` (projectId nulo, navegação, seleção, sem
   runner); `NewProjectWizard.test.tsx` (botão "Procurar pasta...")
-- **ADR:** [0107](../../adr/0107-navegacao-de-pasta-local-via-o-runner.md), revisa
-  a [0072](../../adr/0072-projeto-local-ou-container.md) sem editá-la
+- **ADR:** [0107](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0107-navegacao-de-pasta-local-via-o-runner.md), revisa
+  a [0072](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0072-projeto-local-ou-container.md) sem editá-la
 - **Origem:** pedido do dono do produto — "não consegui linkar com uma
   pasta do usuário"
 
@@ -147,7 +147,7 @@ usuário que digitou um caminho errado ao subir o runner.
   home e subpasta dele no Linux, recusa caminho fora do home e outra
   conta dentro de `/home` no Linux, e confirma que a restrição NÃO se
   aplica fora do Linux)
-- **ADR:** [0104](../../adr/0104-execution-mode-tres-valores-e-workspace-verificado-pelo-runner.md)
+- **ADR:** [0104](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0104-execution-mode-tres-valores-e-workspace-verificado-pelo-runner.md)
   (extensão aditiva — o runner já era declarado "fonte da verdade do
   caminho"; esta regra só estreita o que ele aceita como `--dir` no
   Linux)
@@ -189,7 +189,7 @@ erro original embutida.
   `describe('validarDirDentroDoHomeNoLinux', …)` provando que um `--dir`
   fora do home e AINDA INEXISTENTE continua recusado, confirmando que a
   ordem das duas checagens não abre brecha)
-- **ADR:** [0104](../../adr/0104-execution-mode-tres-valores-e-workspace-verificado-pelo-runner.md)
+- **ADR:** [0104](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0104-execution-mode-tres-valores-e-workspace-verificado-pelo-runner.md)
   (extensão aditiva — não muda o desenho do runner como fonte da verdade
   do caminho, só reduz o atrito de subir um projeto novo)
 - **Origem:** pedido do dono do produto, ao notar que a pasta de um
@@ -237,7 +237,7 @@ silenciosa.
   `apps/runner/scripts/smoke-bin.mjs` (caminho binário, RN-451) — os dois
   únicos lugares que exercitam o artefato empacotado de verdade, nenhum
   teste unitário substitui
-- **ADR:** [0112](../../adr/0112-binario-standalone-do-runner-via-bun-build-compile.md)
+- **ADR:** [0112](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0112-binario-standalone-do-runner-via-bun-build-compile.md)
 - **Origem:** necessidade técnica do binário standalone; a lacuna no smoke
   do npm foi achada por auditoria própria da mudança, não por execução real
   reportando falha
@@ -246,7 +246,7 @@ silenciosa.
 
 ### RN-466 — `brabo-runner` roda sem `--project`/`--dir`/`--token` quando a pasta tem config local gravada pelo navegador {#rn-466}
 
-> **Revisada pela [RN-687](../web.md#rn-687) ([ADR 0203](../../adr/0203-aposenta-o-fluxo-do-runner-pelo-navegador.md), 01/10):**
+> **Revisada pela [RN-687](https://github.com/viralabs-dev/brabo-web/blob/dev/docs/business-rules/web.md#rn-687) ([ADR 0203](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0203-aposenta-o-fluxo-do-runner-pelo-navegador.md), 01/10):**
 > o navegador não grava mais esses arquivos — o fluxo foi aposentado. A
 > LEITURA continua inteira: uma pasta configurada antes do ADR 0203 segue
 > funcionando, e é também por `--dir` apontando para
@@ -274,7 +274,7 @@ opcional, só qual das duas formas é usada.
   leitura; `null` sem lançar para arquivo ausente/JSON inválido/campo
   faltando; respeita o `cwd` recebido; módulo não importa
   `writeFileSync`/`mkdirSync`)
-- **ADR:** [0118](../../adr/0118-configuracao-automatica-do-runner-pelo-navegador.md)
+- **ADR:** [0118](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0118-configuracao-automatica-do-runner-pelo-navegador.md)
 - **Origem:** pedido do dono do produto
 
 ## O artefato de decisão dos conversacionais (RN-505)
@@ -366,7 +366,7 @@ grep, `console.log`/`console.warn`/`console.error` seguem citando só
   `apps/engine/test/engine/dev/worktree_manager_test.exs`,
   `apps/engine/test/engine/dev/worktree_cleanup_test.exs`,
   `apps/runner/src/channel.spec.ts`
-- **ADR:** [0145](../../adr/0145-docker-pre-requisito-do-runner.md)
+- **ADR:** [0145](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0145-docker-pre-requisito-do-runner.md)
 - **Origem:** decisão do dono do produto — Docker vira pré-requisito real do
   modo `runner`, sem fallback pro host
 
@@ -375,8 +375,8 @@ grep, `console.log`/`console.warn`/`console.error` seguem citando só
 ### RN-516 — O destino do espelho viaja na CONCESSÃO do join, o espelho copia a lista do git numa direção só e nunca apaga, e o gatilho é um momento nomeado — nunca um watcher {#rn-516}
 
 A metade B da sessão 6 da FASE 28: a capacidade `espelho`
-([RN-514](../engine.md#rn-514), [ADR 0147](../../adr/0147-agente-local-com-capacidades.md))
-passa a EXISTIR. A [RN-515](../api.md#rn-515) decidiu **onde o destino mora** e não
+([RN-514](https://github.com/viralabs-dev/brabo-engine/blob/dev/docs/business-rules/engine.md#rn-514), [ADR 0147](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0147-agente-local-com-capacidades.md))
+passa a EXISTIR. A [RN-515](https://github.com/viralabs-dev/brabo-api/blob/dev/docs/business-rules/api.md#rn-515) decidiu **onde o destino mora** e não
 copiou arquivo nenhum; esta decide **como ele chega ao agente local, o que é
 copiado e quando**.
 
@@ -413,9 +413,9 @@ escrito a mesma ressalva de **TOCTOU** — é best-effort, não fronteira de
 segurança. Ele recusa (1) symlink que escape do destino, (2) destino que
 **contenha** o workspace e (3) destino **dentro** do workspace; (2) e (3) são
 o mesmo laço em sentidos opostos, e com o bind por identidade do
-[ADR 0141](../../adr/0141-base-unica-dos-projetos-montados.md) escrever o espelho
+[ADR 0141](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0141-base-unica-dos-projetos-montados.md) escrever o espelho
 dentro da origem faz o espelho copiar o próprio espelho. A api já recusou a
-metade **léxica** ([RN-515](../api.md#rn-515)) e diz, no próprio código, que é só o
+metade **léxica** ([RN-515](https://github.com/viralabs-dev/brabo-api/blob/dev/docs/business-rules/api.md#rn-515)) e diz, no próprio código, que é só o
 léxico — ela não tem disco onde resolver um symlink do computador do usuário.
 `destino/atalho -> /caminho/do/projeto` passa por lá sem ser visto, e é aqui
 que ele é resolvido.
@@ -469,12 +469,12 @@ conectado, e não a terceira que a [RN-507](#rn-507) acrescentou (container
 REGISTRADO `running`). Um `RunnerReadiness` com flag "pula container" é
 precisamente o mecanismo pelo qual essa terceira cai por acidente para o `exec`
 numa refatoração futura, e o
-[ADR 0145](../../adr/0145-docker-pre-requisito-do-runner.md) existe para
+[ADR 0145](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0145-docker-pre-requisito-do-runner.md) existe para
 ela não cair. E o espelho legitimamente não precisa dela: a terceira existe
 porque havia duas execuções possíveis e a errada era invisível; cópia de
 arquivo na máquina do usuário não tem container de onde cair. Ele também não
 pergunta o `execution_mode` — quem já decidiu isso foi a api ao gravar o
-destino ([RN-515](../api.md#rn-515) recusa `container`), e repetir a decisão seria a
+destino ([RN-515](https://github.com/viralabs-dev/brabo-api/blob/dev/docs/business-rules/api.md#rn-515) recusa `container`), e repetir a decisão seria a
 segunda fonte da mesma regra.
 
 **Gatilho por MOMENTO NOMEADO, nunca watcher.** O engine empurra `mirror_sync`
@@ -492,7 +492,7 @@ derruba o runner e nunca silêncio.
 **Ele NÃO é `proposed_action`, e não deve virar uma.** A escrita do espelho é
 configuração que o usuário declarou, não um agente pedindo para agir — o ADR
 0147 é explícito disso, e sincronizar por comando de terminal cairia no escopo
-do [ADR 0055](../../adr/0055-escopo-de-caminho-na-politica-de-terminal.md) e viraria
+do [ADR 0055](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0055-escopo-de-caminho-na-politica-de-terminal.md) e viraria
 fila de aprovações rotineiras, corroendo o teto que dá sentido ao clique.
 
 - **Onde:** `apps/runner/src/espelho-guard.ts` (as três recusas, a dupla
@@ -535,7 +535,7 @@ fila de aprovações rotineiras, corroendo o teto que dá sentido ao clique.
   duas recusas e o push de `mirror_sync`);
   `apps/engine/test/engine_web/controllers/action_command_controller_test.exs`
   (o gatilho: commit bem-sucedido dispara, commit que falha não dispara)
-- **ADR:** [0147](../../adr/0147-agente-local-com-capacidades.md), pontos 2, 3, 4 e 8
+- **ADR:** [0147](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0147-agente-local-com-capacidades.md), pontos 2, 3, 4 e 8
 - **Origem:** FASE 28, sessão 6 (metade B). Ficou declarado e **não** ligado o
   segundo momento nomeado do ponto 8, "fim de turno de agente": o engine tem
   duas coisas disjuntas com esse nome e nenhuma é um enganche não-ambíguo —
@@ -554,7 +554,7 @@ fila de aprovações rotineiras, corroendo o teto que dá sentido ao clique.
 ### RN-518 — `brabo-runner service install|uninstall|status` instala nível de USUÁRIO e nunca root; `uninstall` limpa a pasta que a UNIT registra; `status` responde quatro estados sem colapsar nenhum; Windows é recusa nomeada {#rn-518}
 
 A sessão 7 da FASE 28 e o **ponto 5** do
-[ADR 0147](../../adr/0147-agente-local-com-capacidades.md). Até aqui o agente local
+[ADR 0147](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0147-agente-local-com-capacidades.md). Até aqui o agente local
 era **só primeiro plano**: um processo encerrado por SIGINT/SIGTERM, que morre
 com o terminal e não volta com a sessão do usuário. Não havia precedente
 nenhum — nenhuma menção a `systemd`, `launchd` ou `LaunchAgent` em
@@ -574,7 +574,7 @@ nenhum: instalar-e-avisar deixaria a instalação errada de pé, e o aviso seria
 lido uma vez só.
 
 **Windows fica FORA DE ESCOPO, e a recusa é nomeada.** A matriz de build já
-produz o binário de Windows ([ADR 0112](../../adr/0112-binario-standalone-do-runner-via-bun-build-compile.md)),
+produz o binário de Windows ([ADR 0112](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0112-binario-standalone-do-runner-via-bun-build-compile.md)),
 mas serviço de usuário ali é um **terceiro mecanismo** (Serviços do SO com
 conta de usuário, ou Agendador de Tarefas no logon) — não uma variação dos
 dois. Os três subcomandos respondem nomeando a plataforma, dizendo que a
@@ -620,13 +620,13 @@ fundos.
 **`Restart=on-abnormal`, e nunca `on-failure`** (no plist, `KeepAlive` com
 `Crashed`, e nunca `SuccessfulExit`). O runner sai com 1 quando o join foi
 **RECUSADO** — ticket inválido, outro runner no projeto, capacidade que falta
-([RN-514](../engine.md#rn-514)) — ou quando esgotou o próprio teto de tentativas, e as duas
+([RN-514](https://github.com/viralabs-dev/brabo-engine/blob/dev/docs/business-rules/engine.md#rn-514)) — ou quando esgotou o próprio teto de tentativas, e as duas
 coisas são "pare e chame um humano". `on-failure` reiniciaria uma recusa fatal
 em laço, que é exatamente o que o CLI recusa fazer sozinho. Sinal, OOM e
 watchdog — o que `on-abnormal` cobre — são a única falha que reiniciar
 conserta. O `PATH` vai **congelado** na unit, com o custo declarado no próprio
 arquivo: os dois gerenciadores dão ao serviço um PATH mínimo, e o runner chama
-`git` (o espelho, [RN-516](#rn-516)) e `docker` ([ADR 0137](../../adr/0137-o-runner-sobe-o-container-do-projeto.md));
+`git` (o espelho, [RN-516](#rn-516)) e `docker` ([ADR 0137](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0137-o-runner-sobe-o-container-do-projeto.md));
 sem isso o serviço subiria perfeitamente e as duas funções falhariam com "não
 encontrado". É um retrato, e muda só reinstalando.
 
@@ -693,12 +693,12 @@ motivo para deixar o arquivo para trás.
 **E `uninstall` DIZ o que ele não fez: a chave saiu do disco, não do
 servidor.** A pública correspondente continua em `runner_device_keys`, e
 revogá-la é outra coisa (`DELETE /projects/:projectId/runner-device-keys/:deviceKeyId`,
-[ADR 0147](../../adr/0147-agente-local-com-capacidades.md) ponto 6). Um "removido"
+[ADR 0147](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0147-agente-local-com-capacidades.md) ponto 6). Um "removido"
 que deixasse a pessoa achar que revogou seria pior que não remover nada. O log
 do LaunchAgent também **não** é apagado: ele é o registro do usuário sobre o
 que aconteceu, e apagá-lo não foi pedido.
 
-**`status` responde QUATRO estados, e eles não colapsam** ([RN-088](../web.md#rn-088)):
+**`status` responde QUATRO estados, e eles não colapsam** ([RN-088](https://github.com/viralabs-dev/brabo-web/blob/dev/docs/business-rules/web.md#rn-088)):
 *não instalado*, *instalado e rodando*, *instalado e parado*, e *instalado e
 não consegui perguntar*. A primeira resposta vem do **DISCO** — há arquivo de
 unit? —, e é por isso que ela continua certa numa máquina onde o gerenciador
@@ -749,13 +749,13 @@ cuja configuração está quebrada, que é justamente quando alguém pergunta.
   com `%`, espaço, aspas, barra invertida e `$`, e fixam a forma antiga do
   `Environment=` como entregando OUTRO valor; `servico.spec.ts` ganhou as duas
   recusas de quebra de linha e a unit de projeto sem `XDG_CONFIG_HOME`
-- **ADR:** [0147](../../adr/0147-agente-local-com-capacidades.md), ponto 5
+- **ADR:** [0147](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0147-agente-local-com-capacidades.md), ponto 5
 - **Origem:** FASE 28, sessão 7. Fica declarado e NÃO feito: **BRB-031** (o
-  `chmod +x` manual do fluxo do [ADR 0118](../../adr/0118-configuracao-automatica-do-runner-pelo-navegador.md))
+  `chmod +x` manual do fluxo do [ADR 0118](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0118-configuracao-automatica-do-runner-pelo-navegador.md))
   **não** morre aqui — quem roda `brabo-runner service install` já precisou
   tornar o binário executável para chegar até o comando, e o ADR 0147 amarra
   esse efeito colateral à instalação vir do bootstrap versionado do
-  [ADR 0146](../../adr/0146-base-consentida-no-bootstrap.md), que esta entrega não
+  [ADR 0146](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0146-base-consentida-no-bootstrap.md), que esta entrega não
   toca. Também fora: qualquer subcomando de `start`/`stop`/`restart` (quem
   gerencia o ciclo de vida é o gerenciador de serviços do SO, e duplicá-lo no
   CLI criaria uma segunda fonte de verdade sobre o estado) e Windows, acima
@@ -773,7 +773,7 @@ conexão —, e não existia constante, variável nem campo que dissesse onde os
 projetos moram naquela máquina. A palavra "base" só aparecia em comentário.
 
 **A base é LOCAL, e nunca chega pela rede.** É o desenho do broker
-([ADR 0144](../../adr/0144-a-segunda-raiz-do-broker.md)) aplicado ao agente local:
+([ADR 0144](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0144-a-segunda-raiz-do-broker.md)) aplicado ao agente local:
 quem tem a raiz é quem executa, e o que atravessa a rede é o **segmento
 relativo**. Não existe campo de base vindo do servidor, e
 `resolverPastaDoProjetoNaBase` recusa um segmento ABSOLUTO por léxico — nunca o
@@ -781,14 +781,14 @@ relativo**. Não existe campo de base vindo do servidor, e
 
 **Duas fontes, e a flag vence.** `--base <caminho>` na linha de comando, e
 `$XDG_CONFIG_HOME/brabo/runner.json` (senão `~/.config/brabo/runner.json`), que
-é onde o instalador ([ADR 0150](../../adr/0150-instalador-de-uma-linha.md)) a grava. O
+é onde o instalador ([ADR 0150](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0150-instalador-de-uma-linha.md)) a grava. O
 arquivo é de USUÁRIO e não de projeto de propósito: a base é **uma** para N
 projetos, e guardá-la no `brabo-runner.config.json` — que é por projeto, vive
 DENTRO da pasta do projeto e é escrito pelo NAVEGADOR — daria N cópias do mesmo
 valor com N chances de divergir. Variável de ambiente foi recusada por duas
 razões: `BRABO_PROJECTS_BASE` já existe e é a base dos projetos `mounted` do
-lado SERVIDOR ([RN-500](../api.md#rn-500)), a colisão de namespace que o
-[ADR 0141](../../adr/0141-base-unica-dos-projetos-montados.md) recusou por escrito; e
+lado SERVIDOR ([RN-500](https://github.com/viralabs-dev/brabo-api/blob/dev/docs/business-rules/api.md#rn-500)), a colisão de namespace que o
+[ADR 0141](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0141-base-unica-dos-projetos-montados.md) recusou por escrito; e
 sob `systemd --user`/LaunchAgent ([RN-518](#rn-518)) o ambiente é o da unit, não
 o do shell de quem instalou. Só a flag também não bastaria: a base entraria no
 `ExecStart` de cada unit, e trocá-la exigiria reescrever todas.
@@ -798,11 +798,11 @@ NÃO entra na validação dele.** Isto é a proibição da api transposta:
 `project-workspaces-root.ts` proíbe por escrito que a regra da base desça para
 `caminhoDeWorkspaceLocalValido`, porque aquele predicado roda em toda LEITURA e
 um projeto legado fora da base explodiria ao ser lido — *"a base é regra de
-CRIAÇÃO e CONVERSÃO; o léxico é para sempre"* ([RN-501](../api.md#rn-501)). Deste lado
+CRIAÇÃO e CONVERSÃO; o léxico é para sempre"* ([RN-501](https://github.com/viralabs-dev/brabo-api/blob/dev/docs/business-rules/api.md#rn-501)). Deste lado
 vale igual: `--dir` segue validado por `validarDirDentroDoHomeNoLinux` +
 `garantirDiretorio` ([RN-434](#rn-434)/[RN-435](#rn-435)), e estar FORA da base
 não o invalida. Sem isso a base seria `breaking/` sem ganho, contra o binário
-legado da [RN-514](../engine.md#rn-514). A base decide **só** onde uma pasta de projeto NOVA
+legado da [RN-514](https://github.com/viralabs-dev/brabo-engine/blob/dev/docs/business-rules/engine.md#rn-514). A base decide **só** onde uma pasta de projeto NOVA
 nasce.
 
 **A guarda reusa a régua; não nasce uma quarta cópia.** `base-guard.ts` é o
@@ -816,7 +816,7 @@ checagens continuam concordando). Da recusa de laço de `espelho-guard.ts` reusa
 o que é régua — `dentroDoEscopo`, comparação por SEGMENTO e nunca `startsWith`
 cru, para `/base-outra` não contar como dentro de `/base` — e **não** a função
 `recusarLaco`, que lança `DestinoDeEspelhoInvalidoError` e reportaria uma base
-malformada como problema de espelho. Mesma lição da [RN-515](../api.md#rn-515): reusa-se
+malformada como problema de espelho. Mesma lição da [RN-515](https://github.com/viralabs-dev/brabo-api/blob/dev/docs/business-rules/api.md#rn-515): reusa-se
 a régua, não a mensagem.
 
 **O laço aqui é ASSIMÉTRICO, e esse é o achado.** No espelho os dois sentidos
@@ -846,7 +846,7 @@ de quem rodou o CLI.
 
 Nada aqui CRIA pasta: a validação da base não exige que ela exista (quem a cria
 é o instalador, e é o mesmo raciocínio do
-[ADR 0142](../../adr/0142-validacao-de-workspace-montado-adiada.md) — validar disco onde
+[ADR 0142](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0142-validacao-de-workspace-montado-adiada.md) — validar disco onde
 só o léxico é conhecível impediria consentir uma base antes de ela existir). A
 única pergunta de disco é a que nunca é ambígua: um caminho que JÁ existe e não
 é pasta nunca virará uma.
@@ -867,7 +867,7 @@ só o léxico é conhecível impediria consentir uma base antes de ela existir).
   base e o que escapa por link no meio);
   `apps/runner/src/base.spec.ts` (a precedência XDG, os quatro desfechos da
   leitura, a flag vencendo o arquivo, e a recusa carregando a ORIGEM)
-- **ADR:** [0151](../../adr/0151-base-consentida-no-runner.md) pontos 1 e 2
+- **ADR:** [0151](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0151-base-consentida-no-runner.md) pontos 1 e 2
 - **Origem:** FASE 29. O par `workspace_create`/`workspace_create_result` e a
   capacidade `workspace` (pontos 3 a 6 do ADR), declarados aqui como não
   feitos, FECHARAM na [RN-532](#rn-532) — a base passou a ter consumidor.
@@ -896,8 +896,8 @@ repositório — o que existe é o evento `project.workspace_verified` e a colun
 **Só o SEGMENTO atravessa a rede.** A base é local e nunca vem do servidor
 (RN-529); o engine manda `projectId` e o segmento RELATIVO, e é
 `resolverPastaDoProjetoNaBase` — do lado do runner, que tem a raiz — quem os
-junta. É o invariante do [ADR 0130](../../adr/0130-broker-de-container.md)/
-[ADR 0144](../../adr/0144-a-segunda-raiz-do-broker.md) aplicado ao agente local: quem
+junta. É o invariante do [ADR 0130](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0130-broker-de-container.md)/
+[ADR 0144](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0144-a-segunda-raiz-do-broker.md) aplicado ao agente local: quem
 tem a raiz é quem executa. Um segmento ABSOLUTO é recusado por LÉXICO, nunca
 aceito e reinterpretado.
 
@@ -914,8 +914,8 @@ resultado é o que garante que o carimbo já existe quando o pedinte destrava do
 `receive`.
 
 **A capacidade `workspace` entra no vocabulário na sessão em que o código
-entra**, dos dois lados ([ADR 0151](../../adr/0151-base-consentida-no-runner.md)
-ponto 4). A [RN-514](../engine.md#rn-514) tinha feito a aposta oposta com `espelho` — nome
+entra**, dos dois lados ([ADR 0151](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0151-base-consentida-no-runner.md)
+ponto 4). A [RN-514](https://github.com/viralabs-dev/brabo-engine/blob/dev/docs/business-rules/engine.md#rn-514) tinha feito a aposta oposta com `espelho` — nome
 no servidor sem código do outro lado — e ela só se pagou porque alguém a
 cobrou; repetir seria repetir o defeito silencioso que a negociação existe para
 impedir.
@@ -934,7 +934,7 @@ outra ponta — quem tem base declara, e só quem declarou recebe a mensagem.
 consentida — e o ADR adota literalmente a recusa que `Engine.Runners.Espelho` já
 tinha escrito: uma função compartilhada com flag "pula container" é precisamente
 o caminho pelo qual a terceira pré-condição cai POR ACIDENTE para o `exec` numa
-refatoração futura ([RN-507](#rn-507)/[ADR 0145](../../adr/0145-docker-pre-requisito-do-runner.md)
+refatoração futura ([RN-507](#rn-507)/[ADR 0145](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0145-docker-pre-requisito-do-runner.md)
 existe para ela não cair). E aqui a terceira seria pior que desnecessária: é
 **circular** — um projeto `runner` só chega a ter container `running`
 REGISTRADO depois de o próprio runner o subir, e o container sobe sobre a pasta
@@ -950,7 +950,7 @@ onde ele existe).
 lugar.** "Runner conectado" é do `Registry`, e o módulo a responde sozinho.
 "Base consentida" é propriedade daquela CONEXÃO: ela vive em `socket.assigns` e
 **nunca em tabela** (a régua do
-[ADR 0147](../../adr/0147-agente-local-com-capacidades.md)), então quem a responde é o
+[ADR 0147](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0147-agente-local-com-capacidades.md)), então quem a responde é o
 despacho — o canal recusa ANTES de empurrar e devolve `motivo: "sem-base"` pelo
 MESMO `ref`, no formato que o módulo já espera, exatamente como `dispatch_exec`
 faz com o 126. Nunca um timeout, que é como o defeito silencioso apareceria. Os
@@ -985,7 +985,7 @@ este CLI nunca faz isso.
 projeto que o usuário acabou de pedir é configuração CONSENTIDA, não um agente
 pedindo para agir — a mesma linha que o espelho já estabeleceu
 ([RN-516](#rn-516)). Fazê-la por comando de terminal cairia no escopo do
-[ADR 0055](../../adr/0055-escopo-de-caminho-na-politica-de-terminal.md) e viraria
+[ADR 0055](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0055-escopo-de-caminho-na-politica-de-terminal.md) e viraria
 fila de aprovações rotineiras, corroendo o teto que dá sentido ao clique.
 
 - **Onde:** `apps/runner/src/pasta-do-projeto.ts:132` (`criarPastaDoProjeto` —
@@ -1017,7 +1017,7 @@ fila de aprovações rotineiras, corroendo o teto que dá sentido ao clique.
   (`workspace` declarável, nunca no legado, nunca exigida);
   `apps/engine/test/engine_web/channels/terminal_channel_test.exs` (a recusa
   nomeada pelo mesmo `ref`, e nada empurrado ao runner)
-- **ADR:** [0151](../../adr/0151-base-consentida-no-runner.md) pontos 3 a 6
+- **ADR:** [0151](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0151-base-consentida-no-runner.md) pontos 3 a 6
 - **Origem:** FASE 29, sessão 8. Fica declarado e NÃO feito: quem CHAMA
   `PastaDoProjeto.criar/3` — o caminho web→api→engine é da sessão 9 —, e o
   `install.sh` que grava o arquivo da base, que é de outra frente
@@ -1028,10 +1028,10 @@ fila de aprovações rotineiras, corroendo o teto que dá sentido ao clique.
 
 ### RN-544 — O agente local abre N conexões, uma por projeto descoberto pela rota — e o teto de tentativas e a recusa de join deixam de ser do PROCESSO {#rn-544}
 
-A [RN-543](../produto.md#rn-543) abriu `GET runner/projects` e ficou sem chamador. O
+A [RN-543](https://github.com/viralabs-dev/brabo/blob/dev/docs/business-rules/produto.md#rn-543) abriu `GET runner/projects` e ficou sem chamador. O
 `brabo-runner` continuava exigindo `--project`: `index.ts` tinha
 `if (!projectId) uso()`, e não existia execução sem projeto. Esta RN é o
-consumidor — e é a metade do [ADR 0154](../../adr/0154-chave-de-dispositivo-de-maquina.md)
+consumidor — e é a metade do [ADR 0154](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0154-chave-de-dispositivo-de-maquina.md)
 que prova a descoberta dele: *"um único processo que abra N conexões — uma por
 projeto que ele atende — satisfaz os itens 1, 2 e 3 byte a byte"*. **Nada no
 engine muda**: o tópico `terminal:<projectId>`, o socket id e o ticket
@@ -1040,8 +1040,8 @@ segundo runner no mesmo projeto fica intacta, e é garantia real, não acidente.
 
 **Dois modos, e o antigo fica byte a byte.** `--project`/`--dir` com
 credencial de projeto — inclusive o fluxo do navegador
-([ADR 0118](../../adr/0118-configuracao-automatica-do-runner-pelo-navegador.md),
-[RN-464](../api.md#rn-464)) — é o caminho de sempre: UMA conexão, e o desfecho dela
+([ADR 0118](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0118-configuracao-automatica-do-runner-pelo-navegador.md),
+[RN-464](https://github.com/viralabs-dev/brabo-api/blob/dev/docs/business-rules/api.md#rn-464)) — é o caminho de sempre: UMA conexão, e o desfecho dela
 continua sendo o do processo. O modo novo exige as DUAS coisas, e por motivos
 diferentes: credencial de MÁQUINA, porque é ela que a rota aceita; e **base
 consentida** ([RN-529](#rn-529)), porque sem ela não há de onde derivar a pasta
@@ -1051,7 +1051,7 @@ dizendo qual das duas faltou.
 
 **O runner não sabe de que espécie é a própria chave, e isso é decisão.** Em
 disco, chave de máquina e chave de projeto são o MESMO arquivo: uma JWK privada
-com um `kid` ([RN-475](../web.md#rn-475)). Quem sabe é o SERVIDOR, que acha a pública
+com um `kid` ([RN-475](https://github.com/viralabs-dev/brabo-web/blob/dev/docs/business-rules/web.md#rn-475)). Quem sabe é o SERVIDOR, que acha a pública
 por esse `kid`. Então o CLI pergunta, e o 403 nomeado do `PatAuthGuard` vira
 `CredencialNaoEDeMaquinaError`, com as palavras da api e o conserto
 (`--project`) — nunca um "falha na conexão" genérico. Um palpite local seria
@@ -1093,7 +1093,7 @@ serviço de usuário da [RN-518](#rn-518).
 
 **Lista VAZIA é estado NORMAL, e a saída é 0.** É o estado de toda máquina
 recém-instalada: o instalador sobe o agente antes de existir projeto nenhum
-([ADR 0155](../../adr/0155-a-primeira-conta-nasce-no-terminal.md)). Não é erro, então
+([ADR 0155](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0155-a-primeira-conta-nasce-no-terminal.md)). Não é erro, então
 não é código de erro — e `Restart=on-abnormal` ([RN-518](#rn-518)) não o
 reergue, que é o certo: não há o que reerguer. Ficar de pé com zero conexões
 seria um serviço "ativo" que não faz nada, e o `status` da unit passaria a
@@ -1127,7 +1127,7 @@ tem como ser construída), e passar a própria base ali seria pior —
   processo de verdade (sem base, `uso()` com o motivo; com base, a recusa passa
   a ser da credencial); `apps/runner/src/base-guard.spec.ts` — `raizDoProjeto`
   nulo não afrouxa nenhuma outra recusa
-- **Lacuna DECLARADA, FECHADA depois pela [RN-552](../api.md#rn-552):** quando esta RN
+- **Lacuna DECLARADA, FECHADA depois pela [RN-552](https://github.com/viralabs-dev/brabo-api/blob/dev/docs/business-rules/api.md#rn-552):** quando esta RN
   fechou, ninguém CRIAVA chave de máquina (era o `install.sh`, ADR 0155 ponto
   4), então o modo novo só era exercitável com uma chave registrada à mão — a
   metade que a RN-543 já declarava. A `apiUrl` no modo de
@@ -1136,9 +1136,9 @@ tem como ser construída), e passar a própria base ali seria pior —
   host diferentes precisa da flag no `ExecStart`, e quem a escreve é a unit por
   máquina, que é a sessão 4 desta fase. E a unit continua sendo POR PROJETO —
   este PR muda o PROCESSO, não o serviço
-- **ADR:** [0154](../../adr/0154-chave-de-dispositivo-de-maquina.md)
+- **ADR:** [0154](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0154-chave-de-dispositivo-de-maquina.md)
 - **Origem:** FASE 30, sessão 3 —
-  [o recorte da fase](../../explanation/fase-30-runner-por-maquina.md)
+  [o recorte da fase](https://github.com/viralabs-dev/brabo/blob/dev/docs/explanation/fase-30-runner-por-maquina.md)
 
 ## A unit de MÁQUINA, convivendo com as por projeto (RN-545)
 
@@ -1148,10 +1148,10 @@ A [RN-544](#rn-544) fez o agente de máquina existir como PROCESSO — N conexõ
 uma por projeto descoberto pela rota — e declarou por escrito o que faltava:
 *"a unit continua sendo POR PROJETO; este PR muda o PROCESSO, não o serviço"*.
 Esta RN é a outra metade, e é o quinto e último dos cinco acoplamentos que o
-[ADR 0154](../../adr/0154-chave-de-dispositivo-de-maquina.md) mediu
+[ADR 0154](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0154-chave-de-dispositivo-de-maquina.md) mediu
 (`apps/runner/src/servico.ts:264,391`). Os outros quatro já estão fechados ou
 declarados intocáveis: os itens 1, 2 e 3 descrevem uma CONEXÃO e N conexões os
-satisfazem byte a byte, e o item 4 fechou na [RN-543](../produto.md#rn-543).
+satisfazem byte a byte, e o item 4 fechou na [RN-543](https://github.com/viralabs-dev/brabo/blob/dev/docs/business-rules/produto.md#rn-543).
 
 **O nome da unit de máquina não pode colidir com `projectId` nenhum, e não
 colide por construção.** `brabo-runner.service` / `dev.brabo.runner`, sem
@@ -1232,7 +1232,7 @@ criar a sobreposição AGORA.
 
 **`status` responde sobre a espécie perguntada, e os quatro estados não viram
 oito.** O código de saída continua sendo o da unit PERGUNTADA
-([RN-088](../web.md#rn-088)) — somar as duas apagaria qual delas está pedindo atenção, do
+([RN-088](https://github.com/viralabs-dev/brabo-web/blob/dev/docs/business-rules/web.md#rn-088)) — somar as duas apagaria qual delas está pedindo atenção, do
 mesmo jeito que somar as cinco filas de decisão apagaria qual fila é qual. A
 coexistência aparece em TEXTO, e é resposta do **DISCO**: as units da outra
 espécie são listadas pelo nome, sem perguntar o estado de cada uma ao
@@ -1252,7 +1252,7 @@ as duas, que seria remover mais do que foi pedido.
 
 **`Restart=on-abnormal` fica byte a byte, nas duas espécies.** Exit 1 é recusa
 fatal de join ou teto de tentativas esgotado, e reiniciar seria o laço que o CLI
-recusa fazer sozinho ([RN-514](../engine.md#rn-514)). Mais: a RN-544 fez **lista vazia sair
+recusa fazer sozinho ([RN-514](https://github.com/viralabs-dev/brabo-engine/blob/dev/docs/business-rules/engine.md#rn-514)). Mais: a RN-544 fez **lista vazia sair
 com 0** justamente para que `on-abnormal` não reerga o serviço numa instalação
 nova, onde não há o que atender — trocar por `on-failure` desfaria as duas
 decisões de uma vez.
@@ -1279,17 +1279,17 @@ decisões de uma vez.
   espécie recusando e listando as duas)
 - **Lacuna DECLARADA:** o `install --machine` **não sabe** se a chave daquela
   pasta é mesmo de máquina — em disco as duas espécies são o mesmo arquivo, uma
-  JWK com `kid` ([RN-475](../web.md#rn-475)), e quem sabe é o SERVIDOR
+  JWK com `kid` ([RN-475](https://github.com/viralabs-dev/brabo-web/blob/dev/docs/business-rules/web.md#rn-475)), e quem sabe é o SERVIDOR
   ([RN-544](#rn-544)). Uma pasta com chave de PROJETO instala a unit sem erro, e
   a recusa aparece só no primeiro boot, como `CredencialNaoEDeMaquinaError`.
   Verificar no `install` exigiria uma chamada de rede num subcomando que hoje
   não faz nenhuma, e inventar um palpite local produziria a segunda fonte de
   verdade que a RN-544 recusou. E, à época desta RN, ninguém CRIAVA chave de
   máquina: quem registra é o `install.sh`
-  ([ADR 0155](../../adr/0155-a-primeira-conta-nasce-no-terminal.md) ponto 4), na
+  ([ADR 0155](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0155-a-primeira-conta-nasce-no-terminal.md) ponto 4), na
   sessão 6 — esta sessão entrega o subcomando que ele vai chamar, e a rota que
-  ele chama chegou na [RN-552](../api.md#rn-552)
-- **ADR:** [0154](../../adr/0154-chave-de-dispositivo-de-maquina.md)
+  ele chama chegou na [RN-552](https://github.com/viralabs-dev/brabo-api/blob/dev/docs/business-rules/api.md#rn-552)
+- **ADR:** [0154](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0154-chave-de-dispositivo-de-maquina.md)
 - **Origem:** FASE 30, sessão 4 —
 
 ---

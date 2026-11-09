@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Doc (AT-868): os 96 links das páginas de RN que apontavam para docs de outro repo (`../adr/…`, `api.md`) viram URL do arquivo no GitHub do repo dono, na `dev`. No site continuam relativos.
 - Doc (AT-862, ADR 0287): a página de RN `docs/business-rules/runner.md` vira índice mais duas partes (`docs/business-rules/runner/parte-01.md`, desde RN-423, e `parte-02.md`, desde RN-550), com a grade `#rn-NNN` congelada: as 19 âncoras e os links antigos seguem valendo. A RN nova entra na última parte.
 
 - Doc (AT-867): a linha de badges logo abaixo do título separa o CI (`ci.yml`) e a versão da `dev` (última tag `-dev`) e da `main` (release final), e mantém licença, documentação e Ko-fi.
