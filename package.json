@@ -29,7 +29,7 @@
     "node": ">=22.6.0"
   },
   "scripts": {
-    "start": "node --import ./scripts/strip-node-modules.mjs src/index.ts",
+    "start": "node src/index.ts",
     "build": "tsup",
     "build:bin": "node scripts/build-bin.mjs",
     "smoke": "node scripts/smoke-dist.mjs",
@@ -43,7 +43,7 @@
     "node-pty": "^1.1.0"
   },
   "devDependencies": {
-    "@brabo/docker-port": "git+https://github.com/viralabs-dev/brabo-contracts.git#v1.0.0&path:/packages/docker-port",
+    "@brabo/docker-port": "npm:@viralabs-dev/brabo-docker-port@1.2.0",
     "@types/node": "^24.0.0",
     "@types/phoenix": "^1.6.7",
     "oxlint": "^1.71.0",

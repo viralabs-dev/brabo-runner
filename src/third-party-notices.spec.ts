@@ -26,7 +26,7 @@ describe('THIRD_PARTY_NOTICES.md do runner', () => {
     // lista vazia seria instrumento cego
     expect(lista.length).toBeGreaterThanOrEqual(5);
     for (const [nome, versao] of lista) {
-      // @brabo/docker-port vem por git: o lockfile o guarda por URL, sem versão
+      // @brabo/docker-port vem por alias (@viralabs-dev/brabo-docker-port): o lockfile o guarda com outro nome
       if (nome === '@brabo/docker-port') continue;
       expect(lock, `${nome}@${versao}`).toContain(`${nome}@${versao}:`);
     }

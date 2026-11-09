@@ -2,6 +2,27 @@
 
 ## Unreleased
 
+- CI: repina o brabo-ci na release final `v1.4.0` (`5320046`), para a promoção `dev → main` de 09/11/2026 (a `main` só aceita release final).
+
+- Doc (AT-871): cada RN das partes `docs/business-rules/runner/parte-NN.md` ganha uma âncora `<a id="rn-NNN"></a>`, para o link `#rn-NNN` abrir a RN também no GitHub. Só acréscimo de linhas; o site não muda.
+- Doc (AT-868): os 96 links das páginas de RN que apontavam para docs de outro repo (`../adr/…`, `api.md`) viram URL do arquivo no GitHub do repo dono, na `dev`. No site continuam relativos.
+- Docs (AT-873): a tabela "Onde se encaixa" do README linka cada repo no GitHub (o do próprio README fica sem link), gerada pelo `mapa-dos-repos.ts` do brabo-ci repinado em `a571e82` (`v1.4.0-dev.28`, ci#63).
+
+- Doc (AT-862, ADR 0287): a página de RN `docs/business-rules/runner.md` vira índice mais duas partes (`docs/business-rules/runner/parte-01.md`, desde RN-423, e `parte-02.md`, desde RN-550), com a grade `#rn-NNN` congelada: as 19 âncoras e os links antigos seguem valendo. A RN nova entra na última parte.
+
+- Doc (AT-867): a linha de badges logo abaixo do título separa o CI (`ci.yml`) e a versão da `dev` (última tag `-dev`) e da `main` (release final), e mantém licença, documentação e Ko-fi.
+
+- CI (AT-853): o `ci.yml` do job `runner` ganha `build:bin` e `smoke:bin` (linux-x64, `--self-test-pty`) na PR, com `oven-sh/setup-bun` pinado por SHA e Bun 1.4.0, para provar o binário publicável e não só o `dist`. O runner não tem regressivo do brabo-qa: a PR se atesta pelo próprio CI, e o contrato runner ↔ engine só é provado no TP-01 (decisão do dono, 08/11/2026).
+- Doc (AT-848): o bloco "Onde se encaixa" do README é regenerado do `repos.yml` do brabo com o formato `{arquivo, trecho}` e a aresta `brabo → brabo-contracts` (brabo#84); o check `mapa-alinhado` volta a passar.
+- CI (AT-848): todos os `uses:` e `ci_ref` repinam em `6390ef5` (`v1.4.0-dev.17`, brabo-ci#53), que aceita a prova `{arquivo, trecho}` do `mapa-dos-repos.ts`.
+- Docs (AT-826): o `README.md` segue o esqueleto de 8 seções do `brabo-ci` (`README.modelo.md`), com o bloco do mapa dos repos e até 150 linhas. O manual completo (instalação, flags, agente de máquina, chave de dispositivo, serviço, reconexão, macOS e segurança) desce, sem corte, para `docs/how-to/usar-o-runner.md`. O `ci.yml` ganha os checks informativos `readme-esqueleto` e `mapa-alinhado`, e todos os `uses:` e `ci_ref` do `brabo-ci` sobem para `b5df60b` (`v1.4.0-dev.14`).
+
+- CI: o check `Dependências de merge` (AT-787) entra pelo `dependencias.yml`, que chama o reutilizável `dependencias-de-merge.yml` do `brabo-ci` pinado em `c6d9394` (`v1.4.0-dev.10`). A PR declara `Depende-de: viralabs-dev/<repo>#<n>` no corpo e o check fica amarelo (`esperando …`) até cada PR citada estar mergeada. Sem linha `Depende-de` o check fica verde ("Sem dependências declaradas"). Não é exigido por ruleset ainda.
+
+- CI: o `ci.yml` chama o reutilizável `cadeia.yml` do `brabo-ci` (actionlint e pins, `ci_ref` obrigatório, AT-819) e repina todos os `uses:` e `ci_ref` em `0a9eba8` (`v1.4.0-dev.5`, brabo-ci#39). Como o `cadeia` não repete os `-ignore` locais, o `build-runner-binaries.yml` agrupa as redireções para `$GITHUB_OUTPUT` (SC2129) e ganha `shellcheck disable=SC2012` justificado no `ls` do binário.
+
+- O `@brabo/docker-port` passa a vir do GitHub Packages (AT-770, RN-1040): alias `npm:@viralabs-dev/brabo-docker-port@1.2.0` em `devDependencies` no lugar da dependência git por TAG, `.npmrc` só com o registry do escopo, `packages: read` e `setup-node` com escopo no `ci.yml` e no `build-runner-binaries.yml` (token pelo `GITHUB_TOKEN`), check `contracts-alinhado` do `brabo-ci` (pin `4976af2`). Sai o `scripts/strip-node-modules.mjs` (o `dist` do pacote já é `.js`) e o `--import` do `start` e do `index.spec.ts`. Spec em `src/contratos-por-pacote.spec.ts`: `dependencies` sem `@viralabs-dev/*`.
+
 - Release sem binário faltando (AT-794): a causa do v1.1.0 sem `darwin-arm64` foi o `macos-14` não ser mais suportado pelo GitHub (job cancelado em 1s, sem runner); o alvo passa a `macos-15`. A Release da tag nasce rascunho e o job `checksums` só a publica com os três alvos anexados; faltando algum, o run fica vermelho e a Release segue rascunho até um `workflow_dispatch` com a tag. Teste em `src/release-completo.spec.ts`.
 
 - Check `refs` no PR (AT-782): o `refs.yml` chama o `refs-com-simbolo` do `brabo-ci` (pin `64a1e15`) e reprova a ref `caminho:N` (`símbolo`) de RN que o PR quebra; o artefato `refs-patch` traz a reancoragem. Não é check obrigatório.

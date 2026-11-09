@@ -6,7 +6,7 @@ CLI `brabo-runner` que roda na máquina do usuário (ADR 0103). Terminal por PTY
 
 ## Stack (decidida — não proponha alternativas)
 - `brabo-runner`: CLI Node/TS na máquina do usuário (ADR 0103), distribuído só como binário standalone na Release (AT-774).
-- Contratos: `@brabo/docker-port` vem do `brabo-contracts` por TAG, como fonte TypeScript; o runner usa `module.registerHooks` para rodar sem bundler.
+- Contratos: `@brabo/docker-port` vem do GitHub Packages (`npm:@viralabs-dev/brabo-docker-port@1.2.0`, alias do pnpm, devDependency; ADR 0270), publicado pela tag do `brabo-contracts`. O `dist` já é `.js`, então não há hook de type stripping. O `.npmrc` do repo só aponta o registry do escopo `@viralabs-dev`; o token vive no `~/.npmrc` (PAT `read:packages`) ou no CI (`GITHUB_TOKEN` com `packages: read`), nunca no repo. O pacote do runner não declara `@viralabs-dev/*` em `dependencies` (RN-1040). Subir a versão: `scripts/ci/subir-contracts.sh` do `brabo-ci`; o check `contracts-alinhado` confere alias e lock.
 
 ## Repositório, branches e PR (vale para todo repo `brabo-*`)
 - Branches permanentes: dev, main — um branch, um ambiente; a esteira é
@@ -58,6 +58,7 @@ CLI `brabo-runner` que roda na máquina do usuário (ADR 0103). Terminal por PTY
 - Merge em branch protegida (`dev`/`main`) é SEMPRE manual do usuário, sem opção de automatizar. A política de PR, escada, promoção e carimbo de tag vem dos workflows reutilizáveis do `brabo-ci`, fixados por SHA com `# vX` no `uses:`. Imagem de terceiro por digest com a tag inline. Segredo nunca é impresso; teste nunca roda contra o Postgres da instalação.
 - Ref de doc quebrada reprova no próprio PR: o check `refs` (reutilizável `refs-com-simbolo` do `brabo-ci`, não obrigatório) confere cada `caminho:N` (`símbolo`) das RNs, e o artefato `refs-patch` traz a reancoragem (`gh run download <id> -n refs-patch && git apply refs.patch`) (AT-782).
 - Regressivo por funcionalidade (AT-769): PR que toca uma funcionalidade do catálogo (`brabo-qa/funcionalidades.yml`, mapa por caminho) ajusta o regressivo dela no `brabo-qa` contra a `dev`, ou diz no card por que não precisa. Na PR para a `dev` o check `Regressivo do brabo-qa` só atesta (nunca obrigatório); na PR para a `main` o `E2E do brabo-qa` roda o catálogo inteiro e bloqueia, salvo `/qa-aceitar`.
+- Atestação da PR do runner (AT-853): o runner não tem `qa-e2e.yml` nem E2E do brabo-qa; a PR dele se atesta pelo próprio CI (job `runner`: unidade, `dist` e binário linux-x64 com `build:bin` + `smoke:bin`/`--self-test-pty`). O contrato runner ↔ engine NÃO é provado na PR, só no TP-01. As chaves `runner` do catálogo do qa servem só ao mapa.
 
 ## Convenções (agentes, telas e testes)
 - Arquivo que outro PROGRAMA vai parsear se prova contra o PARSER dele, nunca
