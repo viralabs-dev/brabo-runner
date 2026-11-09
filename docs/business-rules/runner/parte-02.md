@@ -12,11 +12,11 @@ keywords: [regras de negócio, runner]
 
 ### RN-550 — Com ZERO conexões o agente local NÃO sai: ele espera e reconsulta a lista; com conexão viva a consulta continua sendo só no start {#rn-550}
 
-Sessão 8 da [FASE 30](../../explanation/fase-30-runner-por-maquina.md). A
+Sessão 8 da [FASE 30](https://github.com/viralabs-dev/brabo/blob/dev/docs/explanation/fase-30-runner-por-maquina.md). A
 [RN-544](parte-01.md#rn-544) fez lista vazia ser estado NORMAL e o processo sair com **0**,
 dizendo *"crie um projeto em modo Runner e suba o agente de novo — a lista é
 consultada só no start"*. Isso contradizia, por escrito, o
-[ADR 0155](../../adr/0155-a-primeira-conta-nasce-no-terminal.md) ponto 5 — *"ele
+[ADR 0155](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0155-a-primeira-conta-nasce-no-terminal.md) ponto 5 — *"ele
 **espera**… quando a pessoa criar o primeiro projeto na web, o agente já está
 lá"* — e quebrava exatamente o caso que a fase persegue: a instalação nova, que
 é a instalação com ZERO projetos. O instalador subia o agente, o agente
@@ -110,26 +110,26 @@ eu não consigo atendê-lo"*.
   `apps/runner/src/index.spec.ts` — a JUNÇÃO no PROCESSO de verdade, contra uma
   api de mentira que devolve `[]`: o processo DIZ que fica de pé e **não
   termina**, que era o defeito
-- **ADR:** [0155](../../adr/0155-a-primeira-conta-nasce-no-terminal.md) ponto 5
+- **ADR:** [0155](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0155-a-primeira-conta-nasce-no-terminal.md) ponto 5
 - **Origem:** FASE 30, sessão 8 —
-  [o recorte da fase](../../explanation/fase-30-runner-por-maquina.md)
+  [o recorte da fase](https://github.com/viralabs-dev/brabo/blob/dev/docs/explanation/fase-30-runner-por-maquina.md)
 
 ### RN-551 — `brabo-runner device-key create`/`finish`: o par Ed25519 nasce NA MÁQUINA, a privada nunca viaja, e o arquivo que o runner lê nunca existe sem `kid` {#rn-551}
 
-Sessão 8 da [FASE 30](../../explanation/fase-30-runner-por-maquina.md), a outra
+Sessão 8 da [FASE 30](https://github.com/viralabs-dev/brabo/blob/dev/docs/explanation/fase-30-runner-por-maquina.md), a outra
 metade. Até aqui, **só o navegador** gerava par de chaves de dispositivo
-(`apps/web/src/lib/runner-bootstrap.ts`, [ADR 0118](../../adr/0118-configuracao-automatica-do-runner-pelo-navegador.md),
-[RN-464](../api.md#rn-464)); o CLI só sabia **ler** o que alguém tinha posto na pasta
-(`device-key.ts`). O [ADR 0155](../../adr/0155-a-primeira-conta-nasce-no-terminal.md)
+(`apps/web/src/lib/runner-bootstrap.ts`, [ADR 0118](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0118-configuracao-automatica-do-runner-pelo-navegador.md),
+[RN-464](https://github.com/viralabs-dev/brabo-api/blob/dev/docs/business-rules/api.md#rn-464)); o CLI só sabia **ler** o que alguém tinha posto na pasta
+(`device-key.ts`). O [ADR 0155](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0155-a-primeira-conta-nasce-no-terminal.md)
 ponto 4 pede o outro lado: *"o par é gerado **na máquina**; a privada nunca
 viaja… mantém verdadeira a frase que a RN-519 usa para recusar a visão de
 `maintainer`: 'a privada de uma chave de dispositivo nunca sai do navegador' —
-passa a ser 'nunca sai da máquina'"*. Sem isso, a [RN-543](../produto.md#rn-543), a
+passa a ser 'nunca sai da máquina'"*. Sem isso, a [RN-543](https://github.com/viralabs-dev/brabo/blob/dev/docs/business-rules/produto.md#rn-543), a
 [RN-544](parte-01.md#rn-544) e a [RN-545](parte-01.md#rn-545) continuavam todas com a mesma lacuna
 declarada: **ninguém cria chave de máquina**.
 
 **São DOIS passos, e o motivo é o `kid`.** O `kid` gravado dentro da JWK privada
-É o id do registro no servidor ([RN-475](../web.md#rn-475)) — a cadeia inteira só o
+É o id do registro no servidor ([RN-475](https://github.com/viralabs-dev/brabo-web/blob/dev/docs/business-rules/web.md#rn-475)) — a cadeia inteira só o
 REPASSA (o runner lê `jwk.kid`, o JWT o leva no header, o `PatAuthGuard` acha a
 pública por ele), e ninguém o deriva de outra coisa. Ele só existe **depois** de
 a pública ser registrada, e uma privada gravada antes disso nasce inútil, que é
@@ -149,11 +149,11 @@ procura; o `finish` carimba e grava o nome de verdade. O arquivo que o runner L�
 ou está completo ou não existe, e uma interrupção entre os dois passos deixa um
 `.parcial` que o runner IGNORA e que o próximo `create` NOMEIA — dizendo que o
 registro daquela tentativa pode ter ficado ÓRFÃO, que é inerte e aparece na
-listagem da [RN-519](../api.md#rn-519).
+listagem da [RN-519](https://github.com/viralabs-dev/brabo-api/blob/dev/docs/business-rules/api.md#rn-519).
 
 **O CLI NÃO fala com a api, e a razão é de SEGREDO, não técnica.** Quem registra
 a chave de máquina é o instalador, autenticado pelo `BRABO_SERVICE_TOKEN` que
-ele acabou de gerar ([ADR 0155](../../adr/0155-a-primeira-conta-nasce-no-terminal.md)
+ele acabou de gerar ([ADR 0155](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0155-a-primeira-conta-nasce-no-terminal.md)
 ponto 1). Fazer o `brabo-runner` chamar a rota exigiria pôr esse token na mão
 dele — um segredo de INSTALAÇÃO, que abre rotas internas, entregue a um processo
 que hoje só vê credencial de dispositivo e que fica de pé para sempre na máquina
@@ -167,7 +167,7 @@ REUSADA.** `$XDG_CONFIG_HOME/brabo/` (senão `~/.config/brabo/`), ao lado do
 MÁQUINA, e uma chave de máquina não tem pasta de projeto onde morar.
 `pastaDeConfiguracaoDoBrabo` foi EXTRAÍDA de `caminhoDoArquivoDeBase` quando
 ganhou o segundo consumidor, nunca copiada. Isso **não** reabre a porta que a
-Onda 2 do [ADR 0104](../../adr/0104-execution-mode-tres-valores-e-workspace-verificado-pelo-runner.md)
+Onda 2 do [ADR 0104](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0104-execution-mode-tres-valores-e-workspace-verificado-pelo-runner.md)
 fechou (credencial em caminho global e IMPLÍCITO): `device-key.ts` continua lendo só do `cwd` que o chamador
 passar, e quem aponta para esta pasta é o `--dir` da unit de máquina
 ([RN-545](parte-01.md#rn-545)), explicitamente, escrito no serviço. `--dir` existe e serve
@@ -213,16 +213,16 @@ devolveria o sintoma silencioso.
   stdout contém só a JWK pública
 - **Lacuna DECLARADA, e FECHADA nas duas metades:** quem REGISTRA a pública
   não existia neste repositório quando esta RN fechou — a rota chegou na
-  [RN-552](../api.md#rn-552) e o `install.sh` que encadeia os dois comandos, na
-  [RN-547](../produto.md#rn-547). O contrato que este comando assume é o que a rota de
+  [RN-552](https://github.com/viralabs-dev/brabo-api/blob/dev/docs/business-rules/api.md#rn-552) e o `install.sh` que encadeia os dois comandos, na
+  [RN-547](https://github.com/viralabs-dev/brabo/blob/dev/docs/business-rules/produto.md#rn-547). O contrato que este comando assume é o que a rota de
   chave de PROJETO já tem (`{ name, publicKeyJwk }`, com `publicKeyJwk` sendo o
   JSON da JWK pública Ed25519 — `kty` "OKP", `crv` "Ed25519", `x` — e resposta
   com `id`), e é isso que o stdout do `create` produz: uma linha nesse formato.
   O comando também **não** escolhe o `name` do dispositivo, de propósito — ele é
   campo do registro, e quem nomeia é quem registra
-- **ADR:** [0155](../../adr/0155-a-primeira-conta-nasce-no-terminal.md) ponto 4
+- **ADR:** [0155](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0155-a-primeira-conta-nasce-no-terminal.md) ponto 4
 - **Origem:** FASE 30, sessão 8 —
-  [o recorte da fase](../../explanation/fase-30-runner-por-maquina.md)
+  [o recorte da fase](https://github.com/viralabs-dev/brabo/blob/dev/docs/explanation/fase-30-runner-por-maquina.md)
 
 ---
 
@@ -230,8 +230,8 @@ devolveria o sintoma silencioso.
 
 ### RN-558 — Credencial no `exec` com container ativo é RECUSADA pelo runner, com desfecho nomeado e origem `politica` {#rn-558}
 
-Lacuna declarada por escrito ao fechar a [RN-507](parte-01.md#rn-507)/[RN-508](../api.md#rn-508)
-([ADR 0145](../../adr/0145-docker-pre-requisito-do-runner.md)) e medida de novo aqui,
+Lacuna declarada por escrito ao fechar a [RN-507](parte-01.md#rn-507)/[RN-508](https://github.com/viralabs-dev/brabo-api/blob/dev/docs/business-rules/api.md#rn-508)
+([ADR 0145](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0145-docker-pre-requisito-do-runner.md)) e medida de novo aqui,
 elo por elo, antes de qualquer linha ser escrita.
 
 **A cadeia, medida.** `Engine.Runners.RunnerReadiness.verificar/1`
@@ -240,12 +240,12 @@ QUALQUER operação de `Engine.Actions.Workspace.RunnerGit` — inclusive o
 `git fetch` autenticado inicial, que sai de `fetch!/3`
 (`runner_git.ex:226`, via `exec/4` em `:288`). A ÚNICA forma de esse registro
 existir num projeto `runner` é o MESMO runner ter subido o próprio container
-([ADR 0137](../../adr/0137-o-runner-sobe-o-container-do-projeto.md)), e é esse mesmo
+([ADR 0137](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0137-o-runner-sobe-o-container-do-projeto.md)), e é esse mesmo
 sucesso que marca `estado.containerAtivo` nele
 (`apps/runner/src/index.ts:822`, em `tratarContainerStart`). Com
 `containerAtivo` setado, `tratarExec` rota o comando para dentro do container
 (`index.ts:728`–`730`, e a recusa nova em `:693`), e a operação `exec` de
-`packages/docker-port` **não tem campo de `env`** — de propósito ([ADR 0130](../../adr/0130-broker-de-container.md):
+`packages/docker-port` **não tem campo de `env`** — de propósito ([ADR 0130](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0130-broker-de-container.md):
 sem `-e` livre nenhum). O campo `env` que a RN-507 acrescentou ao par
 `exec`/`exec_result` (`RunnerRouter.exec/5`, `runner_router.ex:50`;
 `ExecMessage.env`, `apps/runner/src/channel.ts:62`) só é aplicado no caminho
@@ -253,7 +253,7 @@ HOST, onde `apps/runner/src/exec.ts:94` o MESCLA sobre `process.env`.
 
 Resultado: no instante em que a RN-507 deixa o `fetch` autenticado rodar, o
 container quase sempre já está de pé no MESMO runner — e era aí que a
-credencial ([ADR 0056](../../adr/0056-o-engine-trabalha-em-repositorio-remoto.md),
+credencial ([ADR 0056](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0056-o-engine-trabalha-em-repositorio-remoto.md),
 `GitAuth.env_de_auth/1`) era descartada, **em silêncio, sem erro**. O `git`
 rodava com o helper efêmero instalado por `-c` e as duas variáveis VAZIAS, e
 saía com falha de autenticação — indistinguível de token inválido, permissão
@@ -291,7 +291,7 @@ mora em `scripts/ci/`, com os outros testes que leem o repositório inteiro como
 texto.
 
 **A origem é `politica`, e a escolha aponta AÇÃO.** As quatro do
-[ADR 0020](../../adr/0020-destravar-gates-qa-secops.md) não distribuem culpa, dizem o que
+[ADR 0020](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0020-destravar-gates-qa-secops.md) não distribuem culpa, dizem o que
 fazer. Isto não é cláusula que ninguém escreveu (`codigo`) nem rede que caiu
 (`infra`): é a contenção do ADR 0130 funcionando como desenhada, contra um caso
 que ela não previu. Quem lê `politica` sabe que não há bug para caçar — há uma
@@ -360,7 +360,7 @@ ele roda no HOST (`criarPastaDoProjeto`), não no container.
   lados). Verificado por mutação: neutralizar a cláusula de `fetch!/3` reprova
   o teste do engine com a mensagem antiga à vista
 - **Lacuna DECLARADA, que é a METADE que continua aberta — FECHADA pela
-  [RN-676](#rn-676) ([ADR 0193](../../adr/0193-git-credenciado-no-host-do-runner.md),
+  [RN-676](#rn-676) ([ADR 0193](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0193-git-credenciado-no-host-do-runner.md),
   decisão do dono de 01/10):** o fetch credenciado vai MARCADO pelo engine e
   roda no HOST do runner mesmo com container ativo; esta recusa encolheu para o
   `env` SEM a marca (na prática, um runner anterior ao ADR 0193). O texto
@@ -390,10 +390,10 @@ ele roda no HOST (`criarPastaDoProjeto`), não no container.
   dois passos) e checar a ref esperada (o repositório vazio, sem
   `origin/<branch>`, é um estado LEGÍTIMO e cairia como falha)
 - **ADR:** nenhum novo — a entrega não move fronteira nenhuma. Ela CONSOME o
-  [0130](../../adr/0130-broker-de-container.md) (a porta sem `env`), o
-  [0137](../../adr/0137-o-runner-sobe-o-container-do-projeto.md) (o container na
-  máquina do usuário), o [0145](../../adr/0145-docker-pre-requisito-do-runner.md) (a
-  pré-condição e o campo `env`) e o [0020](../../adr/0020-destravar-gates-qa-secops.md) (as
+  [0130](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0130-broker-de-container.md) (a porta sem `env`), o
+  [0137](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0137-o-runner-sobe-o-container-do-projeto.md) (o container na
+  máquina do usuário), o [0145](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0145-docker-pre-requisito-do-runner.md) (a
+  pré-condição e o campo `env`) e o [0020](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0020-destravar-gates-qa-secops.md) (as
   quatro origens)
 - **Origem:** `AT-053` — a lacuna que o ADR 0145 deixou declarada por escrito
 
@@ -404,7 +404,7 @@ ele roda no HOST (`criarPastaDoProjeto`), não no container.
 ### RN-676 — Com container ativo, o `git fetch` credenciado de `RunnerGit` roda no HOST do runner, marcado pelo engine; o código continua no container {#rn-676}
 
 Decisão do dono (01/10), registrada no
-[ADR 0193](../../adr/0193-git-credenciado-no-host-do-runner.md): operação de git
+[ADR 0193](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0193-git-credenciado-no-host-do-runner.md): operação de git
 CREDENCIADA roda no HOST do runner, e o código roda no container. Fecha a
 metade que a [RN-558](#rn-558) deixou aberta — o fetch autenticado em modo
 `runner` com o container de pé, que é o caminho comum, terminava sempre na
@@ -453,7 +453,7 @@ recusa nomeada.
 
 ### RN-688 — O binário do runner lê o PTY com leitor próprio sob o Bun, e o auto-teste prova a SEGUNDA leitura {#rn-688}
 
-Sob o Bun (o binário do `bun build --compile`, [ADR 0112](../../adr/0112-binario-standalone-do-runner-via-bun-build-compile.md)),
+Sob o Bun (o binário do `bun build --compile`, [ADR 0112](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0112-binario-standalone-do-runner-via-bun-build-compile.md)),
 o `tty.ReadStream` com que o `node-pty` lê o lado mestre do PTY é um
 `fs.ReadStream`, e a primeira leitura sem dados do fd não-bloqueante SOBE como
 `EAGAIN`: o stream se destrói, fecha o fd, e nenhum `onData` chega depois disso
@@ -476,7 +476,7 @@ veredito não muda.
 Foi a sonda que mediu o Windows: lá o lado de leitura é o pipe nomeado do
 ConPTY, aberto pelo `node-pty` como `net.Socket`, sem fd que o leitor possa
 assumir, e o pipe termina depois do primeiro pedaço — por isso o `win32-x64`
-saiu da matriz ([ADR 0187](../../adr/0187-runner-sem-binario-win32-x64.md)) em vez de
+saiu da matriz ([ADR 0187](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0187-runner-sem-binario-win32-x64.md)) em vez de
 ganhar contorno.
 
 - **Onde:** `apps/runner/src/leitor-de-pty.ts:60` (`precisaDoLeitorProprio`),
@@ -491,8 +491,8 @@ ganhar contorno.
   um `cat` real, com `EAGAIN` entre elas); a prova de ponta a ponta é o
   `smoke:bin` da matriz, verde em `darwin-arm64`, `linux-x64` e `linux-arm64`
   no ensaio `36779817686`
-- **ADR:** [0112](../../adr/0112-binario-standalone-do-runner-via-bun-build-compile.md),
-  [0187](../../adr/0187-runner-sem-binario-win32-x64.md)
+- **ADR:** [0112](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0112-binario-standalone-do-runner-via-bun-build-compile.md),
+  [0187](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0187-runner-sem-binario-win32-x64.md)
 - **Origem:** AT-342, AT-343
 
 ## AT-770 — o brabo-contracts chega por pacote do GitHub Packages
