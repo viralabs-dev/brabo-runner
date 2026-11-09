@@ -10,6 +10,8 @@ keywords: [regras de negócio, runner]
 
 ## Onda 1 do ADR 0104 — `execution_mode` em três valores, workspace verificado pelo runner
 
+<a id="rn-423"></a>
+
 ### RN-423 — O runner CONFIRMA o caminho; sem confirmação, o comando é recusado — nunca cai no container {#rn-423}
 
 O runner é a **fonte da verdade** do caminho de um projeto `runner`, não o
@@ -73,6 +75,8 @@ mesma recusa vale na corrida (`Registry` dizia conectado no início de
 
 ---
 
+<a id="rn-429"></a>
+
 ### RN-429 — Navegação de pasta local é relay puro pelo Runner, nunca a api enumerando o container {#rn-429}
 
 O canal `terminal:<projectId>` ganha dois eventos, no MESMO desenho de relay
@@ -116,6 +120,8 @@ de texto livre continua sendo o caminho manual, como antes.
 
 ## Terminal do runner local preso em "Abrindo terminal..." para sempre (RN-433)
 
+<a id="rn-434"></a>
+
 ### RN-434 — No Linux, `--dir` do runner local só é aceito dentro do `$HOME` do usuário {#rn-434}
 
 O CLI `brabo-runner` (modo `runner`, ADR 0103/0104) validava só que
@@ -157,6 +163,8 @@ usuário que digitou um caminho errado ao subir o runner.
   à decisão de travar caminhos fora do `$HOME` no Linux)
 
 ---
+
+<a id="rn-435"></a>
 
 ### RN-435 — `--dir` do runner local inexistente é criado, não recusado {#rn-435}
 
@@ -202,6 +210,8 @@ erro original embutida.
 
 ## O explorador de pasta do Runner vira três colunas, e a criação de um projeto `runner` deixa de esperar o passo final (RN-436/436)
 
+<a id="rn-452"></a>
+
 ### RN-452 — `node-pty` resolvido por injeção, não import estático — e a lacuna que isso abriu no smoke do npm foi fechada no mesmo commit {#rn-452}
 
 `pty.ts` deixou de fazer `import * as nodePty from 'node-pty'` estático no
@@ -244,6 +254,8 @@ silenciosa.
 
 ## Configuração do runner pelo navegador (RN-464..466, ADR 0118)
 
+<a id="rn-466"></a>
+
 ### RN-466 — `brabo-runner` roda sem `--project`/`--dir`/`--token` quando a pasta tem config local gravada pelo navegador {#rn-466}
 
 > **Revisada pela [RN-687](https://github.com/viralabs-dev/brabo-web/blob/dev/docs/business-rules/web.md#rn-687) ([ADR 0203](https://github.com/viralabs-dev/brabo/blob/dev/docs/adr/0203-aposenta-o-fluxo-do-runner-pelo-navegador.md), 01/10):**
@@ -278,6 +290,8 @@ opcional, só qual das duas formas é usada.
 - **Origem:** pedido do dono do produto
 
 ## O artefato de decisão dos conversacionais (RN-505)
+
+<a id="rn-507"></a>
 
 ### RN-507 — Docker vira pré-requisito real do modo `runner`: os TRÊS modos de execução exigem o MESMO predicado {#rn-507}
 
@@ -371,6 +385,8 @@ grep, `console.log`/`console.warn`/`console.error` seguem citando só
   modo `runner`, sem fallback pro host
 
 ## O espelho copia o trabalho para a pasta do usuário (RN-516)
+
+<a id="rn-516"></a>
 
 ### RN-516 — O destino do espelho viaja na CONCESSÃO do join, o espelho copia a lista do git numa direção só e nunca apaga, e o gatilho é um momento nomeado — nunca um watcher {#rn-516}
 
@@ -550,6 +566,8 @@ fila de aprovações rotineiras, corroendo o teto que dá sentido ao clique.
 ---
 
 ## O agente local vira serviço de USUÁRIO, e `status` não colapsa estado (RN-518)
+
+<a id="rn-518"></a>
 
 ### RN-518 — `brabo-runner service install|uninstall|status` instala nível de USUÁRIO e nunca root; `uninstall` limpa a pasta que a UNIT registra; `status` responde quatro estados sem colapsar nenhum; Windows é recusa nomeada {#rn-518}
 
@@ -764,6 +782,8 @@ cuja configuração está quebrada, que é justamente quando alguém pergunta.
 
 ## A flag que liga um agente tem de CHEGAR ao processo (RN-540)
 
+<a id="rn-529"></a>
+
 ### RN-529 — O `brabo-runner` nasce com uma BASE local, cada projeto é uma subpasta dela, e a base NUNCA invalida `--dir` {#rn-529}
 
 O agente local não tinha noção de base. A única raiz era `--dir`, resolvida por
@@ -875,6 +895,8 @@ só o léxico é conhecível impediria consentir uma base antes de ela existir).
 ---
 
 ## A base do agente local ganha um consumidor: a pasta do projeto nasce pelo canal (RN-532)
+
+<a id="rn-532"></a>
 
 ### RN-532 — `workspace_create` cria a pasta sob a base LOCAL, e quem GRAVA continua sendo o `workspace_confirm` que já existia {#rn-532}
 
@@ -1026,6 +1048,8 @@ fila de aprovações rotineiras, corroendo o teto que dá sentido ao clique.
 
 ## O agente local abre N conexões, uma por projeto (RN-544, FASE 30)
 
+<a id="rn-544"></a>
+
 ### RN-544 — O agente local abre N conexões, uma por projeto descoberto pela rota — e o teto de tentativas e a recusa de join deixam de ser do PROCESSO {#rn-544}
 
 A [RN-543](https://github.com/viralabs-dev/brabo/blob/dev/docs/business-rules/produto.md#rn-543) abriu `GET runner/projects` e ficou sem chamador. O
@@ -1141,6 +1165,8 @@ tem como ser construída), e passar a própria base ali seria pior —
   [o recorte da fase](https://github.com/viralabs-dev/brabo/blob/dev/docs/explanation/fase-30-runner-por-maquina.md)
 
 ## A unit de MÁQUINA, convivendo com as por projeto (RN-545)
+
+<a id="rn-545"></a>
 
 ### RN-545 — `service install --machine` instala UMA unit para a máquina, e as duas espécies não se sobrepõem {#rn-545}
 
