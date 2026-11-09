@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Doc (AT-862, ADR 0287): a página de RN `docs/business-rules/runner.md` vira índice mais duas partes (`docs/business-rules/runner/parte-01.md`, desde RN-423, e `parte-02.md`, desde RN-550), com a grade `#rn-NNN` congelada: as 19 âncoras e os links antigos seguem valendo. A RN nova entra na última parte.
+
 - Doc (AT-867): a linha de badges logo abaixo do título separa o CI (`ci.yml`) e a versão da `dev` (última tag `-dev`) e da `main` (release final), e mantém licença, documentação e Ko-fi.
 
 - CI (AT-853): o `ci.yml` do job `runner` ganha `build:bin` e `smoke:bin` (linux-x64, `--self-test-pty`) na PR, com `oven-sh/setup-bun` pinado por SHA e Bun 1.4.0, para provar o binário publicável e não só o `dist`. O runner não tem regressivo do brabo-qa: a PR se atesta pelo próprio CI, e o contrato runner ↔ engine só é provado no TP-01 (decisão do dono, 08/11/2026).
