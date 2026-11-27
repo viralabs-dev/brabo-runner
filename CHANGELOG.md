@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- CI (AT-1029 F5): repina todos os `uses:` e `ci_ref` do `brabo-ci` para `v1.6.0` (`e212b71`). O `refs.yml` ganha os checks `refs-entre-repos` (refs `caminho:N` das RNs que cruzam repo), `rn-unica` (número de RN duplicado entre repos) e `indice-de-rn` (índice das áreas partidas e peso das páginas). Nenhum é check obrigatório.
+
 - CI: repina o brabo-ci na release final `v1.4.0` (`5320046`), para a promoção `dev → main` de 09/11/2026 (a `main` só aceita release final).
 
 - Doc (AT-871): cada RN das partes `docs/business-rules/runner/parte-NN.md` ganha uma âncora `<a id="rn-NNN"></a>`, para o link `#rn-NNN` abrir a RN também no GitHub. Só acréscimo de linhas; o site não muda.
